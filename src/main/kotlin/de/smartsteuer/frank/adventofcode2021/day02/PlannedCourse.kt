@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day02
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val commands = lines("/day02/commands.txt")
+  val commands = lines("/day02/commands.txt").toCommands()
   val (position, depth) = executeCommands(0, 0, commands)
   println("position = $position, depth = $depth, product = ${position * depth}")
 
@@ -11,13 +11,16 @@ fun main() {
   println("position = $position2, depth = $depth2, aim = $aim, product = ${position2 * depth2}")
 }
 
-internal data class PositionAndDepth(val position: Int, val depth: Int)
+internal fun List<String>.toCommands() = map { line -> line.split(' ') }.map { Command(it[0], it[1].toInt()) }
 
-internal tailrec fun executeCommands(position: Int, depth: Int, commands: List<String>): PositionAndDepth {
+internal data class Command(val command: String, val value: Int)
+internal data class SubmarineState(val position: Int, val depth: Int, val aim: Int = 0)
+
+internal tailrec fun executeCommands(position: Int, depth: Int, commands: List<Command>): SubmarineState {
   if (commands.isEmpty()) {
-    return PositionAndDepth(position, depth)
+    return SubmarineState(position, depth)
   }
-  val (command: String, value: Int) = commands.first().split(' ').let { Pair(it[0], it[1].toInt()) }
+  val (command: String, value: Int) = commands.first()
   return when (command) {
     "forward" -> executeCommands(position + value, depth,         commands.drop(1))
     "down"    -> executeCommands(position,         depth + value, commands.drop(1))
@@ -26,13 +29,11 @@ internal tailrec fun executeCommands(position: Int, depth: Int, commands: List<S
   }
 }
 
-internal data class PositionAndDepthAndAim(val position: Int, val depth: Int, val aim: Int)
-
-internal tailrec fun executeCommands(position: Int, depth: Int, aim: Int, commands: List<String>): PositionAndDepthAndAim {
+internal tailrec fun executeCommands(position: Int, depth: Int, aim: Int, commands: List<Command>): SubmarineState {
   if (commands.isEmpty()) {
-    return PositionAndDepthAndAim(position, depth, aim)
+    return SubmarineState(position, depth, aim)
   }
-  val (command: String, value: Int) = commands.first().split(' ').let { Pair(it[0], it[1].toInt()) }
+  val (command: String, value: Int) = commands.first()
   return when (command) {
     "forward" -> executeCommands(position + value, depth + aim * value, aim,         commands.drop(1))
     "down"    -> executeCommands(position,         depth,               aim + value, commands.drop(1))
@@ -40,30 +41,3 @@ internal tailrec fun executeCommands(position: Int, depth: Int, aim: Int, comman
     else      -> error("unknown command: '$command'")
   }
 }
-
-/*
-internal fun executeCommandsOldSchool(position: Int, depth: Int, aim: Int, commands: List<String>): PositionAndDepthAndAim {
-  var currentPosition = position
-  var currentDepth    = depth
-  var currentAim      = aim
-  for (i in commands.indices) {
-    val command = commands[i]
-    val parts   = command.split(' ')
-    val commandName = parts[0]
-    val value       = parts[1].toInt()
-    when (commandName) {
-      "forward" -> {
-        currentPosition += value
-        currentDepth    += currentAim * value
-      }
-      "down"    -> {
-        currentAim += value
-      }
-      "up"      -> {
-        currentAim -= value
-      }
-    }
-  }
-  return PositionAndDepthAndAim(currentPosition, currentDepth, currentAim)
-}
-*/

@@ -1,6 +1,5 @@
 package de.smartsteuer.frank.adventofcode2021.day15
 
-import io.kotlintest.matchers.collections.shouldContainExactly
 import io.kotlintest.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -19,27 +18,14 @@ internal class CaveTest {
   @Test
   internal fun `shortest path is correct`() {
     val cave = Cave(input)
-    val path = cave.Path().shortestPath()
-    path.map { "${it.x}/${it.y}" } shouldContainExactly listOf(
-      "0/0", "0/1", "0/2", "1/2", "2/2", "3/2", "4/2", "5/2", "6/2", "6/3", "7/3", "7/4", "8/4", "8/5", "8/6", "8/7", "8/8", "9/8", "9/9"
-    )
-    val riskLevelOfShortestPath = cave.riskLevelOfShortestPath()
-    riskLevelOfShortestPath shouldBe 40
+    val riskLevelOfPathWithLowestRisk = cave.lowestRiskPathRisk()
+    riskLevelOfPathWithLowestRisk shouldBe 40
   }
 
   @Test
   internal fun `shortest path for repeated cave is correct`() {
-    val cave = Cave(input, 5, 5)
-    //val path = cave.Path().shortestPath()
-    //path.map { "${it.x}/${it.y}" } shouldContainExactly listOf(
-    //  "0/0", "0/1", "0/2", "1/2", "2/2", "3/2", "4/2", "5/2", "6/2", "6/3", "7/3", "7/4", "8/4", "8/5", "8/6", "8/7", "8/8", "9/8", "9/9"
-    //)
-    val riskLevelOfShortestPath = cave.riskLevelOfShortestPath()
-    riskLevelOfShortestPath shouldBe 315
-  }
-
-  @Test
-  internal fun `wrap wraps values to expected results`() {
-    (1..20).map { it.wrap(1..9) } shouldBe listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2)
+    val cave = Cave(input, repeat = true)
+    val riskLevelOfPathWithLowestRisk = cave.lowestRiskPathRisk()
+    riskLevelOfPathWithLowestRisk shouldBe 315
   }
 }
