@@ -13,9 +13,9 @@ repositories {
 
 dependencies {
   testImplementation(kotlin("test"))
-  testImplementation (group = "io.kotlintest", name = "kotlintest-assertions", version = "3.4.2") {
-    exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
-  }
+  testImplementation(group = "io.strikt",         name = "strikt-core",            version = "0.33.0")
+  testImplementation(group = "io.kotest",         name = "kotest-assertions-core", version = "5.0.3")
+  testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-params",   version = "5.8.1")
 }
 
 tasks.test {

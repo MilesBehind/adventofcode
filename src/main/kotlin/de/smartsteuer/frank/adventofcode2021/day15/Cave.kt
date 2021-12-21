@@ -9,23 +9,29 @@ import kotlin.time.toDuration
 fun main() {
   val cave1 = Cave(lines("/day15/risks.txt"))
   println ("part1: ${measureTimeMillis { println(cave1.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
-  val cave2 = Cave(lines("/day15/risks.txt"), repeat = true)
-  println ("part1: ${measureTimeMillis { println(cave2.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
+  val cave2 = Cave(lines("/day15/risks.txt"), repeat = 2)
+  println ("part2: ${measureTimeMillis { println(cave2.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
+  val cave3 = Cave(lines("/day15/risks.txt"), repeat = 3)
+  println ("part3: ${measureTimeMillis { println(cave3.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
+  val cave4 = Cave(lines("/day15/risks.txt"), repeat = 4)
+  println ("part4: ${measureTimeMillis { println(cave4.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
+  val cave5 = Cave(lines("/day15/risks.txt"), repeat = 5)
+  println ("part5: ${measureTimeMillis { println(cave5.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
+  val cave10 = Cave(lines("/day15/risks.txt"), repeat = 10)
+  println ("part10: ${measureTimeMillis { println(cave10.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
 }
 
 class Cave(private val riskLevels: List<List<Int>>) {
   companion object {
-    private fun List<List<Int>>.expand(): List<List<Int>> {
-      val expandedRight = map { row -> (1 until 5).fold(row) { acc, step -> acc + row.increasedAndCapped(step) } }
-      return (1 until 5).fold(expandedRight) { acc, step -> acc + expandedRight.increased(step) }
+    private fun List<List<Int>>.expand(repeat: Int): List<List<Int>> {
+      val expandedRight = map { row -> (1 until repeat).fold(row) { acc, step -> acc + row.increasedAndCapped(step) } }
+      return (1 until repeat).fold(expandedRight) { acc, step -> acc + expandedRight.increased(step) }
     }
     private fun List<List<Int>>.increased(by: Int) = map { row -> row.increasedAndCapped(by) }
     private fun List<Int>.increasedAndCapped(by: Int) = map { level -> (level + by).let { if (it > 9) it - 9 else it } }
   }
 
-  constructor(lines: List<String>, repeat: Boolean = false) : this(lines.map { row -> row.toCharArray().map { it.digitToInt() } }.run {
-    if (repeat) expand() else this
-  })
+  constructor(lines: List<String>, repeat: Int = 1) : this(lines.map { row -> row.toCharArray().map { it.digitToInt() } }.expand(repeat))
 
   fun lowestRiskPathRisk(): Int {
     val dist = Array(riskLevels.size) { Array(riskLevels.first().size) { Int.MAX_VALUE } }.apply { get(0)[0] = 0 }

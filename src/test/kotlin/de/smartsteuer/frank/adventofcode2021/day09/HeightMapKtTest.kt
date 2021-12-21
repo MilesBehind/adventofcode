@@ -1,6 +1,6 @@
 package de.smartsteuer.frank.adventofcode2021.day09
 
-import io.kotlintest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import org.junit.jupiter.api.Test
 
 internal class HeightMapKtTest {

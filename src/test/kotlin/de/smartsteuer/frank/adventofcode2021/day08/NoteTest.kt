@@ -1,7 +1,7 @@
 package de.smartsteuer.frank.adventofcode2021.day08
 
-import io.kotlintest.matchers.collections.shouldContainExactly
-import io.kotlintest.shouldBe
+import io.kotest.matchers.collections.shouldContainExactly
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class NoteTest {

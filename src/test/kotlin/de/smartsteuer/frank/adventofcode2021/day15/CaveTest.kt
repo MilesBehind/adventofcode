@@ -1,6 +1,6 @@
 package de.smartsteuer.frank.adventofcode2021.day15
 
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class CaveTest {
@@ -24,7 +24,7 @@ internal class CaveTest {
 
   @Test
   internal fun `shortest path for repeated cave is correct`() {
-    val cave = Cave(input, repeat = true)
+    val cave = Cave(input, repeat = 5)
     val riskLevelOfPathWithLowestRisk = cave.lowestRiskPathRisk()
     riskLevelOfPathWithLowestRisk shouldBe 315
   }

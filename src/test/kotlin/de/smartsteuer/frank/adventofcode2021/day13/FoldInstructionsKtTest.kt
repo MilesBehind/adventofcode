@@ -1,6 +1,6 @@
 package de.smartsteuer.frank.adventofcode2021.day13
 
-import io.kotlintest.shouldBe
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class FoldInstructionsKtTest {
