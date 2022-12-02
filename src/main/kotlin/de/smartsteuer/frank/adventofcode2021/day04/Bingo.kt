@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day04
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val boardsAndNumbers = lines("/day04/boards-and-numbers.txt")
+  val boardsAndNumbers = lines("/adventofcode2021/day04/boards-and-numbers.txt")
   val numbers = boardsAndNumbers[0].splitToSequence(',')
                                    .map { it.toInt() }
                                    .toList()

@@ -5,7 +5,7 @@ package de.smartsteuer.frank.adventofcode2021.day11
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val energyLevels = lines("/day11/energy-levels.txt")
+  val energyLevels = lines("/adventofcode2021/day11/energy-levels.txt")
   val octopuses = Octopuses(energyLevels)
 }
 

@@ -4,7 +4,7 @@ import de.smartsteuer.frank.adventofcode2021.lines
 import java.util.*
 
 fun main() {
-  val chunks = lines("/day10/chunks.txt")
+  val chunks = lines("/adventofcode2021/day10/chunks.txt")
   val scores = score(chunks)
   println("scores = $scores")
   println("score: ${scores.sumOf { it.syntaxScore }}")

@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day01
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val depths    = lines("/day01/depths.txt").map { it.toInt() }
+  val depths    = lines("/adventofcode2021/day01/depths.txt").map { it.toInt() }
   val increases = countIncreases(depths)
   println("increases = $increases")
   val windowedIncreases = countIncreasesWindowed(depths)

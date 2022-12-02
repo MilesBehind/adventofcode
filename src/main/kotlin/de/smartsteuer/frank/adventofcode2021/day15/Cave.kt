@@ -7,17 +7,17 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 fun main() {
-  val cave1 = Cave(lines("/day15/risks.txt"))
+  val cave1 = Cave(lines("/adventofcode2021/day15/risks.txt"))
   println ("part1: ${measureTimeMillis { println(cave1.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
-  val cave2 = Cave(lines("/day15/risks.txt"), repeat = 2)
+  val cave2 = Cave(lines("/adventofcode2021/day15/risks.txt"), repeat = 2)
   println ("part2: ${measureTimeMillis { println(cave2.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
-  val cave3 = Cave(lines("/day15/risks.txt"), repeat = 3)
+  val cave3 = Cave(lines("/adventofcode2021/day15/risks.txt"), repeat = 3)
   println ("part3: ${measureTimeMillis { println(cave3.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
-  val cave4 = Cave(lines("/day15/risks.txt"), repeat = 4)
+  val cave4 = Cave(lines("/adventofcode2021/day15/risks.txt"), repeat = 4)
   println ("part4: ${measureTimeMillis { println(cave4.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
-  val cave5 = Cave(lines("/day15/risks.txt"), repeat = 5)
+  val cave5 = Cave(lines("/adventofcode2021/day15/risks.txt"), repeat = 5)
   println ("part5: ${measureTimeMillis { println(cave5.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
-  val cave10 = Cave(lines("/day15/risks.txt"), repeat = 10)
+  val cave10 = Cave(lines("/adventofcode2021/day15/risks.txt"), repeat = 10)
   println ("part10: ${measureTimeMillis { println(cave10.lowestRiskPathRisk()) }.toDuration(DurationUnit.MILLISECONDS)}")
 }
 

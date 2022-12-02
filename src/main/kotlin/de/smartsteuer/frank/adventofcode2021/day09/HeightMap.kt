@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day09
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val heightMap = HeightMap(lines("/day09/height-map.txt"))
+  val heightMap = HeightMap(lines("/adventofcode2021/day09/height-map.txt"))
   val lowPoints = heightMap.findHeightsOfLowPoints()
   println("lowPoints = $lowPoints")
   val sum       = lowPoints.sumOf { it + 1 }

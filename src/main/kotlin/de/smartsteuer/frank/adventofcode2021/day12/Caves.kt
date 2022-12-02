@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day12
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val caves = Caves(lines("/day12/caves.txt"))
+  val caves = Caves(lines("/adventofcode2021/day12/caves.txt"))
   println("caves: ${caves.caves}")
   val pathCount = caves.countPaths()
   println("path count = $pathCount")

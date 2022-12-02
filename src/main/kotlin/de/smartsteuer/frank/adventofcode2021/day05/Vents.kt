@@ -4,7 +4,7 @@ import de.smartsteuer.frank.adventofcode2021.lines
 import kotlin.math.sign
 
 fun main() {
-  val vents                     = lines("/day05/vents.txt").map { it.toVent() }
+  val vents                     = lines("/adventofcode2021/day05/vents.txt").map { it.toVent() }
   val limitedVents              = vents.filter { it.x1 == it.x2 || it.y1 == it.y2 }
   val limitedGrid               = computeGrid(limitedVents)
   val limitedDangerousPositions = limitedGrid.values.count { it > 1 }

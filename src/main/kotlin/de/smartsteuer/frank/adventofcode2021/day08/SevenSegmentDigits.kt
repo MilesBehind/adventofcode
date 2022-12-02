@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day08
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val notes = lines("/day08/seven-segment-notes.txt").map { Note.fromString(it) }
+  val notes = lines("/adventofcode2021/day08/seven-segment-notes.txt").map { Note.fromString(it) }
   val digitLengths = digits.map { it.size }
   val digit1478Count = notes.map { it.digits }
                             .flatten()

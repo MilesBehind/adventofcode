@@ -5,7 +5,7 @@ import de.smartsteuer.frank.adventofcode2021.lines
 import kotlin.math.sqrt
 
 fun main() {
-  val input = lines("/day17/target-area.txt").first()
+  val input = lines("/adventofcode2021/day17/target-area.txt").first()
   val targetArea = input.toTargetArea()
   println("targetArea = $targetArea")
 

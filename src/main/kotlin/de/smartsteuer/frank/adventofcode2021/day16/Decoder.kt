@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day16
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val bitStream = BitStream(lines("/day16/hex-stream.txt").first())
+  val bitStream = BitStream(lines("/adventofcode2021/day16/hex-stream.txt").first())
   val packet = bitStream.packet()
   val sumOfAllVersions = packet.sumOfVersions()
   println("sum of all versions = $sumOfAllVersions")

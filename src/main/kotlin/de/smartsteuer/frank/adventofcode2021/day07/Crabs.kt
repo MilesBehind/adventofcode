@@ -4,7 +4,7 @@ import de.smartsteuer.frank.adventofcode2021.lines
 import kotlin.math.absoluteValue
 
 fun main() {
-  val positions = lines("/day07/positions.txt").first().splitToSequence(',').map { it.toInt() }.toList()
+  val positions = lines("/adventofcode2021/day07/positions.txt").first().splitToSequence(',').map { it.toInt() }.toList()
   val positionWithMinimumFuelConsumption = computePositionWithMinimumFuelConsumption(positions)
   println("position with minimum fuel consumption = $positionWithMinimumFuelConsumption")
 

@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day18
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val numbers = lines("/day18/homework.txt").map { SnailFishNumber(it) }
+  val numbers = lines("/adventofcode2021/day18/homework.txt").map { SnailFishNumber(it) }
   val sum = numbers.reduce { sum, number -> sum + number }
   val magnitude = sum.magnitude()
   println("magnitude = $magnitude")

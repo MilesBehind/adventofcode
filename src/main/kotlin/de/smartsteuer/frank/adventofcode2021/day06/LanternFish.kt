@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day06
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val fish = lines("/day06/fish-timers.txt").first()
+  val fish = lines("/adventofcode2021/day06/fish-timers.txt").first()
     .splitToSequence(',')
     .map { it.toInt() }
     .map { LanternFish(it) }

@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day02
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val commands = lines("/day02/commands.txt").toCommands()
+  val commands = lines("/adventofcode2021/day02/commands.txt").toCommands()
   val (position, depth) = executeCommands(0, 0, commands)
   println("position = $position, depth = $depth, product = ${position * depth}")
 

@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day14
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val lines = lines("/day14/polymer-template.txt")
+  val lines = lines("/adventofcode2021/day14/polymer-template.txt")
   val start = lines.first()
   val rules = parseRules(lines.drop(2))
   val maxMinusMinAfter10Rounds = maxMinusMin(applyRules(start, rules, 10))

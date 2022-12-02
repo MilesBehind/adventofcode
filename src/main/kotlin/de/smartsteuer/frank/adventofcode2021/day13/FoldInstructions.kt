@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day13
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val lines = lines("/day13/fold-instructions.txt")
+  val lines = lines("/adventofcode2021/day13/fold-instructions.txt")
   val (dots: Set<Dot>, instructions: List<(Dot) -> Dot>) = parseInput(lines)
   val dotsFoldedOnce = applyInstructions(instructions.take(1), dots)
   println("dots folded once: ${dotsFoldedOnce.size}")

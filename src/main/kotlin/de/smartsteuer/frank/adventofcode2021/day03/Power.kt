@@ -3,7 +3,7 @@ package de.smartsteuer.frank.adventofcode2021.day03
 import de.smartsteuer.frank.adventofcode2021.lines
 
 fun main() {
-  val report = lines("/day03/report.txt")
+  val report = lines("/adventofcode2021/day03/report.txt")
   val (gammaRate: Int, epsilonRate: Int) = computeGammaAndEpsilonRates(report)
   println("gammaRate = $gammaRate, epsilonRate = $epsilonRate, product = ${gammaRate * epsilonRate}")
   val (oxygenRate: Int, co2rate: Int) = computeOxygenAndCo2Rates(report)
