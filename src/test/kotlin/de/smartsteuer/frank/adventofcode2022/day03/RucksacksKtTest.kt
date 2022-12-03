@@ -16,6 +16,16 @@ class RucksacksKtTest {
   }
 
   @Test
+  fun `part 2 is correct`() {
+    part2(listOf("vJrwpWtwJgWrhcsFMMfFFhFp",
+                 "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
+                 "PmmdzqPrVvPwwTWBwg",
+                 "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
+                 "ttgJtRGJQctTZtZT",
+                 "CrZsJsPPZsGzwwsLwLmpwMDw")) shouldBe 70
+  }
+
+  @Test
   fun `split halves should return 2 expected halves`() {
     "".splitHalves() shouldBe Pair("", "")
     "12".splitHalves() shouldBe Pair("1", "2")
