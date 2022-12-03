@@ -20,6 +20,9 @@ fun part2(rucksacks: List<String>): Int =
     (first.filter { it in second }.first { it in third }).priority()
   }
 
-fun Char.priority(): Int = if (this in ('a'..'z')) code - 'a'.code + 1 else code - 'A'.code + 1 + 26
+fun Char.priority(): Int = when (this) {
+  in ('a'..'z') -> code - 'a'.code + 1
+  else          -> code - 'A'.code + 1 + 26
+}
 
 fun String.splitHalves(): Pair<String, String> = Pair(substring(0, length / 2), substring(length / 2))
