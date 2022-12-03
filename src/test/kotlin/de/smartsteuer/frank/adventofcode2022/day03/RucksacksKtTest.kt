@@ -40,4 +40,12 @@ class RucksacksKtTest {
     score('A') shouldBe 27
     score('Z') shouldBe 52
   }
+
+  @Test
+  fun `common items are found`() {
+    commonCharacters()                    shouldBe ""
+    commonCharacters("123")               shouldBe "123"
+    commonCharacters("123", "234")        shouldBe "23"
+    commonCharacters("123", "234", "345") shouldBe "3"
+  }
 }
