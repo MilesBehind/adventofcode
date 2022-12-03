@@ -7,7 +7,7 @@ fun main() {
   // simple solution:
   println("part 1: score = ${part1Lookup(input)}")
   println("part 2: score = ${part2Lookup(input)}")
-  // model based solution (more code, mire complicated, better abstraction):
+  // model based solution (more code, more complicated, better abstraction):
   println("part 1: score = ${part1(input)}")
   println("part 2: score = ${part2(input)}")
 }
