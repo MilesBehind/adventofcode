@@ -10,47 +10,50 @@ import kotlin.time.measureTime
 fun main() {
   println("day 04, part 1: ${part1Simple(linesSequence("/adventofcode2022/day04/sections.txt"))}")
   println("day 04, part 2: ${part2Simple(linesSequence("/adventofcode2022/day04/sections.txt"))}")
-  repeat(10) {
+  repeat(8_000) {
     part1Simple(linesSequence("/adventofcode2022/day04/sections.txt"))
     part2Simple(linesSequence("/adventofcode2022/day04/sections.txt"))
   }
   measureTime {
-    repeat(100) {
+    repeat(1_000) {
       part1Simple(linesSequence("/adventofcode2022/day04/sections.txt"))
       part2Simple(linesSequence("/adventofcode2022/day04/sections.txt"))
     }
-  }.let { duration -> println("duration: ${duration / 100}") }
+  }.let { duration -> println("duration: ${duration / 1_000}") }
 }
 
 fun part1Simple(lines: Sequence<String>): Int =
-  parseLines(lines).count { (f1, t1, f2, t2) ->
-    f1 <= f2 && f2 <= t2 && t2 <= t1 || f2 <= f1 && f1 <= t1 && t1 <= t2
+  parseLines(lines).count { (from1, to1, from2, to2) ->
+    from1 <= from2 && from2 <= to2 && to2 <= to1 || from2 <= from1 && from1 <= to1 && to1 <= to2
   }
 
 fun part2Simple(lines: Sequence<String>): Int =
-  parseLines(lines).count { (f1, t1, f2, t2) ->
-    t1 >= f2 && t2 >= f1
+  parseLines(lines).count { (from1, to1, from2, to2) ->
+    to1 >= from2 && to2 >= from1
   }
 
 fun parseLines(lines: Sequence<String>): Sequence<List<Int>> = lines.map { line ->
   val chars = line.toCharArray()
-  var i = 0
-  var f1 = 0
-  var t1 = 0
-  var f2 = 0
-  var t2 = 0
+  var i     = 0
+  var from1 = 0
+  var to1   = 0
+  var from2 = 0
+  var to2   = 0
   while (chars[i].isDigit()) {
-    f1 = f1 * 10 + (chars[i++].code - '0'.code)
+    from1 = from1 * 10 + (chars[i++].code - '0'.code)
   }
+  i++
   while (chars[i].isDigit()) {
-    t1 = t1 * 10 + (chars[i++].code - '0'.code)
+    to1 = to1 * 10 + (chars[i++].code - '0'.code)
   }
-  while (chars[i++].isDigit()) {
-    f2 = f2 * 10 + (chars[i++].code - '0'.code)
+  i++
+  while (chars[i].isDigit()) {
+    from2 = from2 * 10 + (chars[i++].code - '0'.code)
   }
+  i++
   while (i < chars.size && chars[i].isDigit()) {
-    t2 = t2 * 10 + (chars[i++].code - '0'.code)
+    to2 = to2 * 10 + (chars[i++].code - '0'.code)
   }
-  listOf(f1, t1, f2, t2)
+  listOf(from1, to1, from2, to2)
 }
 
