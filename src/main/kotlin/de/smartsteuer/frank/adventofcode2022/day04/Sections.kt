@@ -1,5 +1,6 @@
 package de.smartsteuer.frank.adventofcode2022.day04
 
+import de.smartsteuer.frank.adventofcode2022.extractNumbers
 import de.smartsteuer.frank.adventofcode2022.linesSequence
 
 fun main() {
@@ -18,17 +19,12 @@ fun part2(lines: Sequence<String>): Int =
   }
 
 fun sectionRanges(lines: Sequence<String>): Sequence<List<IntRange>> =
-  """(\d+)-(\d+),(\d+)-(\d+)""".toRegex().let { regex ->
-    lines.map { line ->
-      regex.matchEntire(line)?.let { matchResult ->
-        matchResult.groupValues
-          .drop(1)
-          .map { it.toInt() }
-          .chunked(2)
-          .map { (from, to) -> (from..to) }
-      } ?: throw IllegalArgumentException("line not parsable: $line")
+  lines
+    .extractNumbers("""(\d+)-(\d+),(\d+)-(\d+)""".toRegex())
+    .map {
+      it.chunked(2)
+      .map { (from, to) -> (from..to) }
     }
-  }
 
 infix fun IntRange.contains(other: IntRange) = this.first <= other.first && last >= other.last
 

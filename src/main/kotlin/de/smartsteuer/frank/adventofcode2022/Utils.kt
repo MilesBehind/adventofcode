@@ -13,3 +13,10 @@ fun linesSequence(path: String): Sequence<String> {
 }
 
 fun text(path: String): String = resource(path)?.openStream()?.reader()?.readText() ?: ""
+
+fun Sequence<String>.extractNumbers(regex: Regex): Sequence<List<Int>> =
+  map { line ->
+    regex.matchEntire(line)?.let { matchResult ->
+      matchResult.groupValues.drop(1).map { it.toInt() }
+    } ?: throw IllegalArgumentException("could not parse '$line'")
+  }
