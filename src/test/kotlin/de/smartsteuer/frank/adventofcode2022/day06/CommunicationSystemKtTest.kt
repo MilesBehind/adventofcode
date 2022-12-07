@@ -3,9 +3,11 @@ package de.smartsteuer.frank.adventofcode2022.day06
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
+@Suppress("SpellCheckingInspection")
 class CommunicationSystemKtTest {
   @Test
   fun `part 1 is correct`() {
+    part1("mjqjpqmgbljsphdztnvjfqwrcgsmlb")    shouldBe  7
     part1("bvwbjplbgvbhsrlpgdmjqwftvncz")      shouldBe  5
     part1("nppdvjthqldpwncqszvftbrmjlhg")      shouldBe  6
     part1("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg") shouldBe 10
