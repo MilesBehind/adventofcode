@@ -54,5 +54,15 @@ class FileSystemKtTest {
   fun `parseFileSystemOutput is correct`() {
     parseFileSystemOutput(fileSystemOutput).size() shouldBe 48381165
   }
+
+  @Test
+  fun `simple part 1 is correct`() {
+    part1Simple(fileSystemOutput) shouldBe 95_437
+  }
+
+  @Test
+  fun `simple part 2 is correct`() {
+    part2Simple(fileSystemOutput) shouldBe 24_933_642
+  }
 }
 
