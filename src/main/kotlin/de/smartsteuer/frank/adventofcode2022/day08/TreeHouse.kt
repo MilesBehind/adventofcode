@@ -9,9 +9,9 @@ fun main() {
 }
 
 fun part1(input: List<String>): Int {
-  val width   = input.first().length
-  val height  = input.size
-  val trees   = parseTrees(input)
+  val width  = input.first().length
+  val height = input.size
+  val trees  = parseTrees(input)
   tailrec fun computeVisibilities(coordinates: Iterator<Coordinate>, result: Set<Coordinate>): Set<Coordinate> {
     if (!coordinates.hasNext()) return result
     val coordinate = coordinates.next()
@@ -24,9 +24,9 @@ fun part1(input: List<String>): Int {
 }
 
 fun part2(input: List<String>): Int {
-  val width   = input.first().length
-  val height  = input.size
-  val trees   = parseTrees(input)
+  val width  = input.first().length
+  val height = input.size
+  val trees  = parseTrees(input)
   tailrec fun computeViewDistances(coordinates: Iterator<Coordinate>, result: List<Int>): List<Int> {
     if (!coordinates.hasNext()) return result
     val coordinate       = coordinates.next()
@@ -55,6 +55,8 @@ data class Coordinate(val x: Int, val y: Int) {
   }
 }
 
+typealias TreeGrid = Map<Coordinate, Int>
+
 fun TreeGrid.height(coordinate: Coordinate): Int = get(coordinate) ?: 0
 
 fun parseTrees(input: List<String>): TreeGrid =
@@ -73,18 +75,13 @@ fun parseTrees(input: List<String>): TreeGrid =
  * @param predicate this predicate will stop taking elements, if it evaluates to `true`
  * @return elements before predicate was evaluated to `true`
  */
-fun <T> Iterable<T>.takeUntil(predicate: (T) -> Boolean): Iterable<T> {
-  tailrec fun takeUntil(elements: Iterator<T>, result: List<T>): List<T> {
-    return when {
-      elements.hasNext() -> {
-        val element = elements.next()
-        if (predicate(element)) result + element else takeUntil(elements, result + element)
-      }
-      else               -> result
-    }
+fun <T> Iterable<T>.takeUntil(predicate: (T) -> Boolean): List<T> {
+  // uses mutable list because this is much simpler, better to understand and works very much like other standard library functions
+  val result = mutableListOf<T>()
+  for (element in this) {
+    result += element
+    if (predicate(element)) break
   }
-  return takeUntil(iterator(), emptyList())
+  return result
 }
-
-typealias TreeGrid = Map<Coordinate, Int>
 
