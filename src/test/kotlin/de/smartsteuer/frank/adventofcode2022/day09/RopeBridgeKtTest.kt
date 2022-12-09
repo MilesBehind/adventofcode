@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 
 class RopeBridgeKtTest {
 
-  private val input = listOf(
+  private val input1 = listOf(
     "R 4",
     "U 4",
     "L 3",
@@ -16,9 +16,26 @@ class RopeBridgeKtTest {
     "R 2",
   )
 
+  private val input2 = listOf(
+    "R 5",
+    "U 8",
+    "L 8",
+    "D 3",
+    "R 17",
+    "D 10",
+    "L 25",
+    "U 20",
+  )
+
   @Test
   fun `part 1 is correct`() {
-    Day09.part1(input) shouldBe 13
+    Day09.part1(input1) shouldBe 13
+  }
+
+  @Test
+  fun `part 2 is correct`() {
+    Day09.part2(input1) shouldBe 1
+    Day09.part2(input2) shouldBe 36
   }
 
   @Test

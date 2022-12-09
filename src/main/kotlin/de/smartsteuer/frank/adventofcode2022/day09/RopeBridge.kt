@@ -7,39 +7,37 @@ import kotlin.math.sign
 fun main() {
   val input = lines("/adventofcode2022/day09/head-movement.txt")
   println("day 09, part 1: ${Day09.part1(input)}")
+  println("day 09, part 2: ${Day09.part2(input)}")
 }
 
 object Day09 {
   fun part1(input: List<String>): Int {
-    tailrec fun processMoves(moves: List<Move>, move: Move, head: Coordinate, tail: Coordinate, visited: Set<Coordinate>): Set<Coordinate> {
-      println("processMoves(${moves.size} remaining, $move, $head, $tail, ${visited.size})")
-      if (move.isEmpty()) {
-        if (moves.isEmpty()) return visited
-        return processMoves(moves.drop(1), moves.first(), head, tail, visited)
-      }
-      val (newHead, newMove) = move applyTo (head)
-      println("  applied $move to $head => $newHead")
-      val newTail = tail follow newHead
-      println("  $tail follow $newHead => $newTail")
-      return processMoves(moves, newMove, newHead, newTail, visited + newTail)
-    }
     val moves = parseHeadMoves(input)
-    val head  = Coordinate(0, 0)
-    val tail  = Coordinate(0, 0)
-    return processMoves(moves.drop(1), moves.first(), head, tail, setOf(tail)).size
+    val rope  = List(2) { Coordinate(0, 0) }
+    return processMoves(moves.drop(1), moves.first(), rope, setOf(rope.last())).size
+  }
+
+  fun part2(input:List<String>): Int {
+    val moves = parseHeadMoves(input)
+    val rope  = List(10) { Coordinate(0, 0) }
+    return processMoves(moves.drop(1), moves.first(), rope, setOf(rope.last())).size
+  }
+
+  private tailrec fun processMoves(moves: List<Move>, move: Move, rope: List<Coordinate>, visited: Set<Coordinate>): Set<Coordinate> {
+    if (move.isEmpty()) {
+      if (moves.isEmpty()) return visited
+      return processMoves(moves.drop(1), moves.first(), rope, visited)
+    }
+    val (newHead, newMove) = move applyTo (rope.first())
+    val ropeAfterHeadMove  = listOf(newHead) + rope.drop(1)
+    val newRope            = ropeAfterHeadMove.followHead()
+    return processMoves(moves, newMove, newRope, visited + newRope.last())
   }
 
   enum class Direction(val deltaX: Int, val deltaY: Int) {
     RIGHT(1, 0), LEFT(-1, 0), UP(0, -1), DOWN(0, 1);
-
     companion object {
-      fun parse(name: String): Direction = when (name) {
-        "R"  -> RIGHT
-        "L"  -> LEFT
-        "U"  -> UP
-        "D"  -> DOWN
-        else -> throw IllegalArgumentException("there is no direction with name $name")
-      }
+      fun parse(name: String): Direction = Direction.values().find { it.name.startsWith(name) } ?: throw IllegalArgumentException("invalid name: $name")
     }
   }
 
@@ -55,12 +53,14 @@ object Day09 {
       val deltaY = other.y - this.y
       return when {
         abs(deltaX) <= 1 && abs(deltaY) <= 1 -> this
-        abs(deltaX)  < 1 && abs(deltaY) <= 2 -> Coordinate(x,               y + deltaY.sign)
-        abs(deltaX) <= 2 && abs(deltaY)  < 1 -> Coordinate(x + deltaX.sign, y)
         else                                 -> Coordinate(x + deltaX.sign, y + deltaY.sign)
       }
     }
+    override fun toString() = "($x, $y)"
   }
+
+  private fun List<Coordinate>.followHead(): List<Coordinate> =
+    this.drop(1).fold(listOf(first())) { acc, coordinate -> acc + (coordinate follow acc.last()) }
 
   private fun parseHeadMoves(input: List<String>): List<Move> =
     input.map { line ->

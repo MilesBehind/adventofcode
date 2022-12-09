@@ -12,36 +12,26 @@ object Day08 {
   }
 
   fun part1(input: List<String>): Int {
-    val width = input.first().length
-    val height = input.size
-    val trees = parseTrees(input)
-    tailrec fun computeVisibilities(coordinates: Iterator<Coordinate>, result: Set<Coordinate>): Set<Coordinate> {
-      if (!coordinates.hasNext()) return result
-      val coordinate = coordinates.next()
-      val rays = coordinate.rays(width, height)
-      val newResult = if (rays.any { ray -> ray.all { trees.height(it) < trees.height(coordinate) } }) result + coordinate else result
-      return computeVisibilities(coordinates, newResult)
+    val width        = input.first().length
+    val height       = input.size
+    val trees        = parseTrees(input)
+    val box          = Coordinate.box(1..(width - 2), 1..(height - 2))
+    val visibilities = box.toSet().filter { coordinate ->
+      coordinate.rays(width, height).any { ray -> ray.all { trees.height(it) < trees.height(coordinate) } }
     }
-
-    val box = Coordinate.box(1..(width - 2), 1..(height - 2))
-    return computeVisibilities(box.iterator(), emptySet()).size + 2 * width + 2 * height - 4
+    return visibilities.size + 2 * width + 2 * height - 4
   }
 
   fun part2(input: List<String>): Int {
-    val width = input.first().length
+    val width  = input.first().length
     val height = input.size
-    val trees = parseTrees(input)
-    tailrec fun computeViewDistances(coordinates: Iterator<Coordinate>, result: List<Int>): List<Int> {
-      if (!coordinates.hasNext()) return result
-      val coordinate = coordinates.next()
+    val trees  = parseTrees(input)
+    val box    = Coordinate.box(1..(width - 2), 1..(height - 2))
+    return box.maxOf { coordinate ->
       val rays = coordinate.rays(width, height)
       val distancesForRays = rays.map { ray -> ray.asIterable().takeUntil { trees.height(it) >= trees.height(coordinate) }.count() }
-      val scenicScore = distancesForRays.fold(1) { acc, distance -> acc * distance }
-      return computeViewDistances(coordinates, result + scenicScore)
+      distancesForRays.fold(1) { acc, distance -> acc * distance }
     }
-
-    val box = Coordinate.box(1..(width - 2), 1..(height - 2))
-    return computeViewDistances(box.iterator(), emptyList()).max()
   }
 
   data class Coordinate(val x: Int, val y: Int) {
@@ -50,7 +40,6 @@ object Day08 {
         Coordinate(coordinate.x + deltaX, coordinate.y + deltaY).let { result -> if (result.x in 0 until width && result.y in 0 until height) result else null }
       }
     }
-
     companion object {
       fun box(horizontalRange: IntRange, verticalRange: IntRange): Sequence<Coordinate> =
         horizontalRange.asSequence().flatMap { x ->
