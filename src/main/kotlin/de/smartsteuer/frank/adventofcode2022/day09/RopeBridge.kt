@@ -48,14 +48,10 @@ object Day09 {
   }
 
   data class Coordinate(val x: Int, val y: Int) {
-    infix fun follow(other: Coordinate): Coordinate {
-      val deltaX = other.x - this.x
-      val deltaY = other.y - this.y
-      return when {
-        abs(deltaX) <= 1 && abs(deltaY) <= 1 -> this
-        else                                 -> Coordinate(x + deltaX.sign, y + deltaY.sign)
+    infix fun follow(other: Coordinate): Coordinate =
+      Coordinate(other.x - this.x, other.y - this.y).let { delta ->
+        if (abs(delta.x) <= 1 && abs(delta.y) <= 1) this else Coordinate(x + delta.x.sign, y + delta.y.sign)
       }
-    }
     override fun toString() = "($x, $y)"
   }
 
