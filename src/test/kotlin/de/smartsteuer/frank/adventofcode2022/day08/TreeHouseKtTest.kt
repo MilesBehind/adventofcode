@@ -15,12 +15,12 @@ class TreeHouseKtTest {
 
   @Test
   fun `part 1 is correct`() {
-    part1(input) shouldBe 21
+    Day08.part1(input) shouldBe 21
   }
 
   @Test
   fun `part 2 is correct`() {
-    part2(input) shouldBe 8
+    Day08.part2(input) shouldBe 8
   }
 
   @Test
