@@ -11,15 +11,13 @@ fun main() {
 }
 
 object Day09 {
-  fun part1(input: List<String>): Int {
-    val moves = parseHeadMoves(input)
-    val rope  = List(2) { Coordinate(0, 0) }
-    return processMoves(moves.drop(1), moves.first(), rope, setOf(rope.last())).size
-  }
+  fun part1(input: List<String>) = traceTail(input, 2)
 
-  fun part2(input:List<String>): Int {
+  fun part2(input: List<String>) = traceTail(input, 10)
+
+  private fun traceTail(input: List<String>, ropeLength: Int): Int {
     val moves = parseHeadMoves(input)
-    val rope  = List(10) { Coordinate(0, 0) }
+    val rope  = List(ropeLength) { Coordinate(0, 0) }
     return processMoves(moves.drop(1), moves.first(), rope, setOf(rope.last())).size
   }
 
