@@ -25,7 +25,7 @@ object Day10 {
   }
 
   fun createCrtImage(timeToX: List<Int>): String {
-    val pixels = List(timeToX.size) { time -> timeToX[time].let { x -> (if (time % 40 - x in (-1..1)) '#' else '.') } }
+    val pixels = timeToX.mapIndexed { time, x -> (if (time % 40 - x in (-1..1)) '#' else '.') }
     return pixels.take(6 * 40).chunked(40).joinToString(separator = "\n") { String(it.toCharArray()) }
   }
 
