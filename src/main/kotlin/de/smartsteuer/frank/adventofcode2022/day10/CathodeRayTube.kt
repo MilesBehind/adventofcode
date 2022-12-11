@@ -21,7 +21,7 @@ object Day10 {
     val timeToX      = executeInstructions(instructions)
     val image        = createCrtImage(timeToX)
     println(image)
-    return "PHLHJGZA"
+    return "PHLHJGZA"  // found after reading CRT image output
   }
 
   fun createCrtImage(timeToX: List<Int>): String {
