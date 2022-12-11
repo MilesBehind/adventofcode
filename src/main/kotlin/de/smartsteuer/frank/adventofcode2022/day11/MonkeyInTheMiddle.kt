@@ -17,7 +17,7 @@ object Day11 {
   fun part2(input: List<String>): Long {
     val monkeys         = parseMonkeyRules(input)
     val reliefOperation = ModuloOperation(monkeys.map { it.rule.test.divisor }.fold(1) { product, factor -> product * factor })
-    return computeMonkeyBusiness(monkeys, 10_000, reliefOperation)
+    return computeMonkeyBusiness(monkeys, 1_000, reliefOperation)
   }
 
   private fun computeMonkeyBusiness(monkeys: List<Monkey>, rounds: Int, reliefOperation: Operation): Long {
@@ -27,7 +27,7 @@ object Day11 {
   }
 
   private tailrec fun executeRounds(monkeys: List<Monkey>, rounds: Int, reliefOperation: Operation, monkeyIndex: Int = 0): List<Monkey> {
-    if (rounds == 0) return monkeys //.also { println("  rounds == 0 => finished") }
+    if (rounds == 0) return monkeys
     if (monkeyIndex >= monkeys.size) {
       return executeRounds(monkeys, rounds - 1, reliefOperation)
     }
