@@ -34,7 +34,7 @@ object Day15 {
       y to space.computeCoverage(y)
             .map { interval -> interval.clamp(acceptedRange) }
             .filter { !it.isEmpty() }
-    }.find { (_, intervals) -> intervals.size >= 2 } ?: throw IllegalStateException("empty intervals")
+    }.find { (_, intervals) -> intervals.size >= 2 } ?: throw IllegalStateException("no invisible beacon was found")
     val y = rowWithAtLeastTwoIntervals.first
     val x = rowWithAtLeastTwoIntervals.second.first().last + 1
     return x * 4_000_000L + y
