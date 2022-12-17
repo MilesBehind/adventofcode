@@ -50,6 +50,11 @@ fun IntRange.clamp(other: IntRange): IntRange = when {
   else                     -> (first.coerceAtLeast(other.first))..(last.coerceAtMost(other.last))
 }
 
+fun <T> List<T>.cycle(): Sequence<T> {
+  var index = 0
+  return generateSequence { this[index++ % size] }
+}
+
 /**
  * Creates sequence of each element of the list, where each is combined with a list of all other elements in the list.
  * @return sequence of pairs with each element as first and all other element as second element
