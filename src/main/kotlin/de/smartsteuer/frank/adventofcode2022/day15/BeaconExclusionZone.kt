@@ -8,12 +8,17 @@ import de.smartsteuer.frank.adventofcode2022.extractNumbers
 import de.smartsteuer.frank.adventofcode2022.lines
 import de.smartsteuer.frank.adventofcode2022.merge
 import kotlin.math.abs
+import kotlin.system.measureTimeMillis
 
 
 fun main() {
   val input = lines("/adventofcode2022/day15/sensors-and-beacons.txt")
-  println("day 15, part 1: ${part1(input, 2_000_000)}")
-  println("day 15, part 2: ${part2(input, 0..4_000_000)}")
+  measureTimeMillis {
+    println("day 15, part 1: ${part1(input, 2_000_000)}")
+  }.also { println(it) }
+  measureTimeMillis {
+    println("day 15, part 2: ${part2(input, 0..4_000_000)}")
+  }.also { println(it) }
 }
 
 object Day15 {
