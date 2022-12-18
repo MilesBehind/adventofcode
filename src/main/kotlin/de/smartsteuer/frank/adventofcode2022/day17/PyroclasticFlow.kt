@@ -5,11 +5,16 @@ import de.smartsteuer.frank.adventofcode2022.day17.Day17.part1
 import de.smartsteuer.frank.adventofcode2022.day17.Day17.part2
 import de.smartsteuer.frank.adventofcode2022.lines
 import kotlin.math.max
+import kotlin.system.measureTimeMillis
 
 fun main() {
   val input = lines("/adventofcode2022/day17/jet-pattern.txt").first()
-  println("day 17, part 1: ${part1(input)}")
-  println("day 17, part 2: ${part2(input)}")
+  measureTimeMillis {
+    println("day 17, part 1: ${part1(input)}")
+  }.also { println(it) }
+  measureTimeMillis {
+    println("day 17, part 2: ${part2(input)}")
+  }.also { println(it) }
 }
 
 object Day17 {
@@ -43,7 +48,7 @@ object Day17 {
       val nextRock               = chamberWithStoppedRock.start(rockShapeSequence.next())
       //println(chamberWithStoppedRock.render(nextRock))
       val newGrowthAfterStoppedRocks = growthAfterStoppedRocks + (chamberWithStoppedRock.height() - chamber.height())
-      val (start, size) = findRepeatingPattern(newGrowthAfterStoppedRocks)
+      val (start, size) = newGrowthAfterStoppedRocks.findRepeatingPattern()
       if (size > 0) {
         println("found repeating pattern starting at $start with size $size")
         return computeHeight(growthAfterStoppedRocks, rocksToStop, start, size)
@@ -70,10 +75,10 @@ object Day17 {
 
   @Suppress("MemberVisibilityCanBePrivate")
   data class RockShape(val cells: Set<Pos>) {
-    val minX   = cells.minOf { it.x }
-    val maxX   = cells.maxOf { it.x }
-    val minY   = cells.minOf { it.y }
-    val maxY   = cells.maxOf { it.y }
+    val minX = cells.minOf { it.x }
+    val maxX = cells.maxOf { it.x }
+    val minY = cells.minOf { it.y }
+    val maxY = cells.maxOf { it.y }
   }
 
   private val horizontalLineRock = RockShape(setOf(Pos(0, 0), Pos(1, 0), Pos(2, 0), Pos(3, 0)))
@@ -150,13 +155,12 @@ object Day17 {
     }
   }
 
-  private fun findRepeatingPattern(list: List<Int>): Pair<Int, Int> {
-    (20..list.size / 3).forEach { size ->
-      (0 until size).forEach { start ->
-        if (list.subList(start, start + size) == list.subList(start + size, start + size + size)) {
-          println("list of size $size is repeated starting at $start")
-          return start to size
-        }
+  fun List<Int>.findRepeatingPattern(): Pair<Int, Int> {
+    (20..size / 2).forEach { patternSize ->
+      if (subList(size - patternSize, size) == subList(size - 2 * patternSize, size - patternSize)) {
+        val start = size - 2 * patternSize
+        println("list of size $patternSize is repeated starting at $start")
+        return start to patternSize
       }
     }
     return 0 to 0

@@ -1,15 +1,21 @@
 package de.smartsteuer.frank.adventofcode2022.day16
 
 import de.smartsteuer.frank.adventofcode2022.*
+import de.smartsteuer.frank.adventofcode2022.day15.Day15
 import de.smartsteuer.frank.adventofcode2022.day16.Day16.part1
 import de.smartsteuer.frank.adventofcode2022.day16.Day16.part2
 import java.io.File
+import kotlin.system.measureTimeMillis
 
 
 fun main() {
   val input = lines("/adventofcode2022/day16/valves.txt")
-  println("day 16, part 1: ${part1(input)}")
-  println("day 16, part 2: ${part2(input)}")
+  measureTimeMillis {
+    println("day 16, part 1: ${part1(input)}")
+  }.also { println(it) }
+  measureTimeMillis {
+    println("day 16, part 2: ${part2(input)}")
+  }.also { println(it) }
 }
 
 const val MINUTES_AVAILABLE         = 30
