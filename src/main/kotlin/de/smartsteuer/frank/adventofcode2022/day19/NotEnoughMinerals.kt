@@ -6,6 +6,7 @@ import de.smartsteuer.frank.adventofcode2022.day19.Day19.part1
 import de.smartsteuer.frank.adventofcode2022.day19.Day19.part2
 import de.smartsteuer.frank.adventofcode2022.extractNumbers
 import de.smartsteuer.frank.adventofcode2022.linesSequence
+import de.smartsteuer.frank.adventofcode2022.replaced
 import kotlin.system.measureTimeMillis
 
 private const val MINUTES = 24
@@ -35,59 +36,64 @@ object Day19 {
     val costsObsidian: Int get() = 0
     val produces:      Resource
 
-    val neededResources get() = lazy { mapOf(ORE to costsOre, CLAY to costsClay, OBSIDIAN to costsObsidian, GEODE to 0) }
+    val neededResources get() = lazy { listOf(0, costsOre, costsClay, costsObsidian, 0) }
 
     fun canBeProduced(inventory: Inventory): Boolean =
-      neededResources.value.all { (resource, count) -> inventory.resources.getValue(resource) >= count }
+      neededResources.value.mapIndexed { resource, count -> inventory.resources[resource] >= count }.all { it }
 
     fun produce(inventory: Inventory): Inventory =
-      inventory.copy(resources = inventory.resources.mapValues { (resource, count) -> count - neededResources.value.getOrDefault(resource, 0) },
-                     robots    = inventory.robots.mapValues    { (resource, count) -> if (resource == produces) count + 1 else count })
+      inventory.copy(resources = inventory.resources.mapIndexed { resource, count -> count - neededResources.value[resource] },
+                     robots    = inventory.robots.replaced(produces.ordinal, inventory.robots[produces.ordinal] + 1))
 
-    object NoRobot: Robot { override val produces = NOTHING }
+    object NoRobot: Robot { override val produces = NOTHING; override fun toString() = "NoRobot" }
     data class OreRobot     (override val costsOre: Int): Robot { override val produces = ORE }
     data class ClayRobot    (override val costsOre: Int): Robot { override val produces = CLAY }
     data class ObsidianRobot(override val costsOre: Int, override val costsClay:     Int): Robot { override val produces = OBSIDIAN }
     data class GeodeRobot   (override val costsOre: Int, override val costsObsidian: Int): Robot { override val produces = GEODE }
   }
 
+  data class Inventory(val resources: List<Int>, val robots: List<Int>)  // uses resource.ordinal as index
 
-  data class Inventory(val resources: Map<Resource, Int>, val robots: Map<Resource, Int>)
+
 
   data class Blueprint(val number: Int, val oreRobot: OreRobot, val clayRobot: ClayRobot, val obsidianRobot: ObsidianRobot, val geodeRobot: GeodeRobot) {
 
-    private val robots = listOf(GEODE to geodeRobot, OBSIDIAN to obsidianRobot, CLAY to clayRobot, ORE to oreRobot)
+    private val robots = listOf(NoRobot, oreRobot, clayRobot, obsidianRobot, geodeRobot)
 
-    private val startInventory = Inventory(mapOf(ORE to 0, CLAY to 0, OBSIDIAN to 0, GEODE to 0),
-                                           mapOf(ORE to 1, CLAY to 0, OBSIDIAN to 0, GEODE to 0))
+    private val maximumNeededResources = listOf(10_000,  // nothing is always on our shopping list
+                                                robots.maxOf { it.costsOre },
+                                                robots.maxOf { it.costsClay },
+                                                robots.maxOf { it.costsObsidian } * 2,
+                                                10_000)  // geode is always on our shopping list
+
+    private val startInventory = Inventory(listOf(0, 0, 0, 0, 0),  // NOTHING, ORE, CLAY, OBSIDIAN, GEODE
+                                           listOf(0, 1, 0, 0, 0))  // NOTHING, ORE, CLAY, OBSIDIAN, GEODE
 
     private fun computeMaximumGeodesAfter(minutes: Int): Int {
       val inventory = computeInventoryAfter(minutes, startInventory)
       println("inventory after $minutes minutes: $inventory")
-      return inventory.resources.getOrDefault(GEODE, 0)
+      return inventory.resources[GEODE.ordinal]
     }
 
-    var calls = 0
-
     private fun computeInventoryAfter(minutes: Int, inventory: Inventory): Inventory {
-      if (calls++ > 1_000) {
-        println("aborting after 1000 calls")
+      //println("computeInventoryAfter(${24 - minutes + 1}, $inventory)")
+      if (minutes == 0) {
+        println("time is up, inventory: $inventory")
         return inventory
       }
-      if (minutes == 0) return inventory
-      println("computeInventoryAfter($minutes, $inventory)")
-      val inventoryAfterCollectingResources = inventory.copy(resources = inventory.resources.mapValues { (resource, count) ->
-        count + inventory.robots.getOrDefault(resource, 0)
+      val inventoryAfterCollectingResources = inventory.copy(resources = inventory.resources.mapIndexed { resource, count ->
+        count + inventory.robots[resource]
       })
-      val producibleRobots = robots.filter { (_, robot) -> robot.canBeProduced(inventory) }.map { it.second }
-      println("producibleRobots: $producibleRobots")
-      if (producibleRobots.isEmpty()) {
-        println("no robots can be produced")
-        return computeInventoryAfter(minutes - 1, inventoryAfterCollectingResources)
-      }
-      return producibleRobots
-        .map { robot -> println("produce $robot..."); computeInventoryAfter(minutes - 1, robot.produce(inventoryAfterCollectingResources)) }
-        .maxBy { finalInventory -> finalInventory.resources.getOrDefault(GEODE, 0) }
+      val productionCandidates = robots
+        .filter { robot -> robot.canBeProduced(inventory) }
+        .filterIndexed { resource, _ -> inventoryAfterCollectingResources.resources[resource] < maximumNeededResources[resource] }
+      //println("producibleRobots: $producibleRobots")
+      return productionCandidates
+        .map { robot ->
+          //println("produce $robot...")
+          computeInventoryAfter(minutes - 1, robot.produce(inventoryAfterCollectingResources))
+        }
+        .maxBy { finalInventory -> finalInventory.resources[GEODE.ordinal] }
     }
 
     fun computeQualityLevel(minutes: Int) = computeMaximumGeodesAfter(minutes) * number

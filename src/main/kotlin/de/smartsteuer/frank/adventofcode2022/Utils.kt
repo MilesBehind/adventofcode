@@ -14,6 +14,8 @@ fun linesSequence(path: String): Sequence<String> {
 
 fun text(path: String): String = resource(path)?.openStream()?.reader()?.readText() ?: ""
 
+
+
 fun Sequence<String>.extractNumbers(regex: Regex): Sequence<List<Int>> =
   map { line ->
     regex.matchEntire(line)?.let { matchResult ->
@@ -25,6 +27,8 @@ fun List<String>.extractStrings(regex: Regex): List<List<String>> =
   map { line ->
     regex.matchEntire(line)?.groupValues?.drop(1) ?: throw IllegalArgumentException("could not parse '$line'")
   }
+
+
 
 @Suppress("RemoveExplicitTypeArguments")
 fun List<IntRange>.merge(other: IntRange): List<IntRange> {
@@ -50,10 +54,14 @@ fun IntRange.clamp(other: IntRange): IntRange = when {
   else                     -> (first.coerceAtLeast(other.first))..(last.coerceAtMost(other.last))
 }
 
+
+
 fun <T> List<T>.cycle(): Sequence<T> {
   var index = 0
   return generateSequence { this[index++ % size] }
 }
+
+fun <T> List<T>.replaced(index: Int, element: T): List<T> = take(index) + element + drop(index + 1)
 
 /**
  * Creates sequence of each element of the list, where each is combined with a list of all other elements in the list.
@@ -91,6 +99,8 @@ fun <T> List<T>.permutations(): Sequence<List<T>> {
     head + tail.next()
   }
 }
+
+
 
 object GraphAlgorithms {
   data class FloydMarshalResult<N>(val nodeInfos: Map<Pair<N, N>, NodeInfo<N>>) {
