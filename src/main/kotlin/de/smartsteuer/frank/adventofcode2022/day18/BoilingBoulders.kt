@@ -70,6 +70,17 @@ object Day18 {
       return outsideCells
     }
 
+    // this is far slower than the mutable iterative variant
+    private tailrec fun findExteriorCellsTailRec(cellsToProcess: List<Cube> = List(1) { Cube(xRange.first, yRange.first, zRange.first) },
+                                                 outsideCells: Set<Cube> = emptySet()): Set<Cube> {
+      if (cellsToProcess.isEmpty()) return outsideCells
+      val cell = cellsToProcess.last()
+      if (cell !in outsideCells && cell !in cubes && (cell.x in xRange && cell.y in yRange && cell.z in zRange)) {
+        return findExteriorCellsTailRec(cellsToProcess.dropLast(1) + cell.neighbours(), outsideCells + cell)
+      }
+      return findExteriorCellsTailRec(cellsToProcess.dropLast(1), outsideCells)
+    }
+
     companion object {
       fun parse(input: List<String>): Volume =
         Volume(input.map { line ->
