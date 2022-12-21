@@ -1,14 +1,16 @@
 package de.smartsteuer.frank.adventofcode2022.day21
 
 import de.smartsteuer.frank.adventofcode2022.day21.Day21.parseExpressions
+import de.smartsteuer.frank.adventofcode2022.day21.Day21.Expression
 import de.smartsteuer.frank.adventofcode2022.day21.Day21.Expression.*
+import de.smartsteuer.frank.adventofcode2022.day21.Day21.Solver
 import de.smartsteuer.frank.adventofcode2022.day21.Day21.part1
 import de.smartsteuer.frank.adventofcode2022.day21.Day21.part2
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
+@Suppress("SpellCheckingInspection")
 class MonkeyMathTest {
-  @Suppress("SpellCheckingInspection")
   private val input = listOf(
     "root: pppw + sjmn",
     "dbpl: 5",
@@ -29,12 +31,19 @@ class MonkeyMathTest {
 
   @Test
   fun `part 1 is correct`() {
-    part1(input) shouldBe 152
+    part1(input) shouldBe 152  // non-example result: 268597611536314
   }
 
   @Test
   fun `part 2 is correct`() {
-    part2(input) shouldBe 0
+    part2(input) shouldBe 301  // non-example result: 3451534022348
+  }
+
+  @Test
+  fun `solving works`() {
+    val solver = Solver(parseExpressions(input))
+    val patchedSolver = Solver(solver.expressions + ("humn" to Assigment("humn", Literal(301))))
+    patchedSolver.solveRoot()
   }
 
   @Suppress("SpellCheckingInspection")
@@ -58,4 +67,24 @@ class MonkeyMathTest {
       Assigment("hmdt", Literal(32)),
     )
   }
+
+  @Test
+  fun `expression can be simplified`() {
+    simplify(Sum(Subtraction(Literal(5), Literal(3)), Multiplication(Literal(7), UnresolvedVariable("x")))) shouldBe
+             Sum(Literal(2),                          Multiplication(Literal(7), UnresolvedVariable("x")))
+
+    simplify(Sum(Subtraction(Literal(5), Literal(3)), Multiplication(UnresolvedVariable("x"), Literal(7)))) shouldBe
+             Sum(Literal(2),                          Multiplication(UnresolvedVariable("x"), Literal(7)))
+
+    simplify(Sum(Subtraction(Literal(5), UnresolvedVariable("x")), Multiplication(Literal(7), Literal(8)))) shouldBe
+             Sum(Subtraction(Literal(5), UnresolvedVariable("x")), Literal(56))
+
+    simplify(Sum(Subtraction(UnresolvedVariable("x"), Literal(5)), Multiplication(Literal(7), Literal(8)))) shouldBe
+             Sum(Subtraction(UnresolvedVariable("x"), Literal(5)), Literal(56))
+
+    simplify(Sum(Subtraction(Literal(5), Division(Literal(9), Literal(3))), Multiplication(Literal(7), UnresolvedVariable("x")))) shouldBe
+             Sum(Literal(2),                                                Multiplication(Literal(7), UnresolvedVariable("x")))
+  }
+
+  private fun simplify(expression: Expression): Expression = Solver(listOf(Assigment("y", expression))).simplify(expression)
 }
