@@ -4,6 +4,7 @@ import de.smartsteuer.frank.adventofcode2022.day22.Day22.Action.*
 import de.smartsteuer.frank.adventofcode2022.day22.Day22.Coordinate
 import de.smartsteuer.frank.adventofcode2022.day22.Day22.State
 import de.smartsteuer.frank.adventofcode2022.day22.Day22.Direction
+import de.smartsteuer.frank.adventofcode2022.day22.Day22.GroveMap
 import de.smartsteuer.frank.adventofcode2022.day22.Day22.parseInput
 import de.smartsteuer.frank.adventofcode2022.day22.Day22.part1
 import de.smartsteuer.frank.adventofcode2022.day22.Day22.part2
@@ -42,7 +43,7 @@ class MonkeyMapTest {
 
   @Test
   fun `map and path can be parsed`() {
-    val (map, path) = parseInput(input)
+    val (map, path) = parseInput(input, GroveMap.WrapStrategy.Flat)
     map.toString() shouldBe input.dropLast(2).joinToString(separator = "\n", postfix = "\n")
 
     path.actions shouldBe listOf(
@@ -52,7 +53,7 @@ class MonkeyMapTest {
 
   @Test
   fun `next tile for some state can be found`() {
-    val (map, _) = parseInput(input)
+    val (map, _) = parseInput(input, GroveMap.WrapStrategy.Flat)
     assertSoftly {
       map.nextTile(State( 8 to  0, Direction.RIGHT)) shouldBe Coordinate( 9,  0)
       map.nextTile(State( 8 to  0, Direction.LEFT))  shouldBe Coordinate(11,  0)
