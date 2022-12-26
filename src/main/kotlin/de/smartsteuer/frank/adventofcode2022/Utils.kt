@@ -1,6 +1,7 @@
 package de.smartsteuer.frank.adventofcode2022
 
 import java.net.URL
+import java.time.Duration
 
 fun resource(path: String): URL? = object {}.javaClass.getResource(path)
 
@@ -156,27 +157,68 @@ object GraphAlgorithms {
     return FloydMarshalResult(distances.mapValues { (key, distance) -> FloydMarshalResult.NodeInfo(distance, successors.getValue(key)) })
   }
 
-  data class State<N>(val result: Map<N, Int>, val predecessors: Map<N, N>)
+  private var calls = 0L
 
-  private fun <N> dijkstra(start: N, edges: Set<Edge<N>>): Map<N, N> {
+  fun <N> dijkstra(start: N, edges: Set<Edge<N>>, biDirectionalEdges: Boolean): Map<N, N> {
+    val fromNodesToEdges: Map<N, List<Edge<N>>> = edges.fold(mutableMapOf()) { result, edge ->
+      val list = result.getOrDefault(edge.from(), emptyList())
+      result[edge.from()] = list + edge
+      result
+    }
+    data class State<N>(val result: Map<N, Int>, val predecessors: Map<N, N>)
     tailrec fun go(active: Set<N>, state: State<N>): State<N> {
+      calls++
+      if (calls % 10_000L == 0L) {
+        println("${String.format("%,d", calls)} loops so far...")
+      }
       if (active.isEmpty()) return state
       val node = active.minBy { state.result.getValue(it) }
       val cost = state.result.getValue(node)
-      val neighboursAndCosts = edges.filter { node in it }.map { it.other(node) }
+      val neighboursAndCosts = (if (biDirectionalEdges) edges.filter { node in it }.map { it.other(node) }
+                                else                    fromNodesToEdges.getOrDefault(node, emptyList()).map { it.to() })
         .filter { neighbour -> cost + 1 < state.result.getOrDefault(neighbour, Int.MAX_VALUE) }
         .associateWith { cost + 1 }
       val active1 = active - node + neighboursAndCosts.keys
       val predecessors = neighboursAndCosts.mapValues { node }
       return go(active1, State(state.result + neighboursAndCosts, state.predecessors + predecessors))
     }
+    calls = 0L
     return go(setOf(start), State(mapOf(start to 0), emptyMap())).predecessors
   }
 
-  private fun <N> shortestPath(shortestPathTree: Map<N, N>, start: N, end: N): List<N> {
+  fun <N> shortestPath(shortestPathTree: Map<N, N>, start: N, end: N): List<N> {
     tailrec fun pathTo(start: N, end: N, result: List<N>): List<N> =
       if (shortestPathTree[end] == null) result + listOf(end) else pathTo(start, shortestPathTree[end]!!, result + listOf(end))
-    return pathTo(start, end, emptyList())
+    return pathTo(start, end, emptyList()).reversed()
+  }
+
+  fun <N> dijkstraMutable(start: N, edges: Set<Edge<N>>, biDirectionalEdges: Boolean): Map<N, N> {
+    calls = 0L
+    val nodesToEdgesStartingWithNode: Map<N, List<Edge<N>>> = edges.fold(mutableMapOf()) { result, edge ->
+      val list = result.getOrDefault(edge.from(), emptyList())
+      result[edge.from()] = list + edge
+      result
+    }
+    val active       = mutableSetOf(start)
+    val result       = mutableMapOf(start to 0)
+    val predecessors = mutableMapOf<N, N>()
+    while (active.isNotEmpty()) {
+      calls++
+      if (calls % 10_000L == 0L) {
+        println("${String.format("%,d", calls)} loops so far...")
+      }
+      val node = active.minBy { result.getValue(it) }
+      val cost = result.getValue(node)
+      val neighboursAndCosts = (if (biDirectionalEdges) edges.filter { node in it }.map { it.other(node) }
+                                else                    nodesToEdgesStartingWithNode.getOrDefault(node, emptyList()).map { it.to() })
+        .filter { neighbour -> cost + 1 < result.getOrDefault(neighbour, Int.MAX_VALUE) }
+        .associateWith { cost + 1 }
+      active -= node
+      active += neighboursAndCosts.keys
+      predecessors += neighboursAndCosts.mapValues { node }
+      result += neighboursAndCosts
+    }
+    return predecessors
   }
 
   /*
