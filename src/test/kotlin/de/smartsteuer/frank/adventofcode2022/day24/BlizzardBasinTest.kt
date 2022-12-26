@@ -67,7 +67,7 @@ class BlizzardBasinTest {
   @Test
   fun `valley can be converted to 3D-valley`() {
     val valley = parseValley(input)
-    val valley3D = valley.toValley3D()
+    val valley3D = valley.toValley3D(startTime = 0)
     println("time =  0:\n${valley3D.toValley( 0)}")
     println("time =  9:\n${valley3D.toValley( 9)}")
     println("time = 18:\n${valley3D.toValley(18)}")
