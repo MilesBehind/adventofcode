@@ -23,23 +23,22 @@ internal fun part2(calibration: List<String>): Int {
 }
 
 private fun calibrationValue(input: String): Int =
-  (input.find     { it.isDigit() }?.digitToInt() ?: 0) * 10 +
-  (input.findLast { it.isDigit() }?.digitToInt() ?: 0)
+  toDigits(input).let { digits -> digits.first() * 10 + digits.last() }
+
+private fun calibrationValueIncludingText(input: String): Int =
+  toDigitsIncludingText(input).let { digits -> digits.first() * 10 + digits.last() }
+
+private fun toDigits(input: String): List<Int> =
+  input.filter { it.isDigit() }.map { it.digitToInt() }
+
+private fun toDigitsIncludingText(input: String) =
+  input.indices
+    .map { input.substring(it) }
+    .mapNotNull { subInput ->
+      when {
+        subInput.first().isDigit() -> subInput.first().digitToInt()
+        else                       -> numbers.entries.find { (word, _) -> subInput.startsWith(word) }?.value
+      }
+    }
 
 private val numbers = mapOf("one" to 1, "two" to 2, "three" to 3, "four" to 4, "five" to 5, "six" to 6, "seven" to 7, "eight" to 8, "nine" to 9)
-
-private fun calibrationValueIncludingText(input: String): Int {
-  val first = input.indices.map            { index -> startToDigit(input.substring(index))        }.first { it != null } ?: 0
-  val last  = input.indices.reversed().map { index -> endToDigit  (input.substring(0, index + 1)) }.first { it != null } ?: 0
-  return first * 10 + last
-}
-
-internal fun startToDigit(input: String): Int? = when {
-  input.first().isDigit() -> input.first().digitToInt()
-  else                    -> numbers.entries.find { input.startsWith(it.key) }?.value
-}
-
-internal fun endToDigit(input: String): Int? = when {
-  input.last().isDigit() -> input.last().digitToInt()
-  else                   -> numbers.entries.find { input.endsWith(it.key) }?.value
-}
