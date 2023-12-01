@@ -8,11 +8,12 @@ fun main() {
   println("part 2: ${part2(calibrationInput)}")
 }
 
-internal fun part1(calibrationInput: List<String>): Int =
-  calibrationInput.map { calibrationValue(it, digits) }.also { println("values: $it") }.sum()
+internal fun part1(calibrationInput: List<String>): Int = computeSum(calibrationInput, digits)
 
-internal fun part2(calibrationInput: List<String>): Int =
-  calibrationInput.map { calibrationValue(it, digits + words) }.also { println("values: $it") }.sum()
+internal fun part2(calibrationInput: List<String>): Int = computeSum(calibrationInput, digits + words)
+
+private fun computeSum(calibrationInput: List<String>, numbers: Map<String, Int>): Int =
+  calibrationInput.map { calibrationValue(it, numbers) }.also { println("values: $it") }.sum()
 
 private fun calibrationValue(input: String, numbers: Map<String, Int>): Int =
   toDigits(input, numbers).let { digits -> digits.first() * 10 + digits.last() }
