@@ -1,4 +1,4 @@
-package de.smartsteuer.frank.adventofcode2022
+package de.smartsteuer.frank.adventofcode2023
 
 import java.net.URL
 
