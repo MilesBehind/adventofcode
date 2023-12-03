@@ -31,7 +31,7 @@ class GearRationsKtTest {
   @Test
   fun `grid finds numbers`() {
     val grid = parseGrid(input + "..1....987")
-    grid.findNumbers() shouldBe listOf(
+    grid.numbers shouldBe setOf(
       Grid.Number(467, setOf(c(0, 0), c(1, 0), c(2, 0))),
       Grid.Number(114, setOf(c(5, 0), c(6, 0), c(7, 0))),
       Grid.Number( 35, setOf(c(2, 2), c(3, 2))),
@@ -51,7 +51,7 @@ class GearRationsKtTest {
   @Test
   fun `symbols are recognized`() {
     val grid = parseGrid(input)
-    grid.findSymbols() shouldBe listOf(
+    grid.symbols shouldBe setOf(
       Grid.Symbol('*', c(3, 1)),
       Grid.Symbol('#', c(6, 3)),
       Grid.Symbol('*', c(3, 4)),
@@ -59,54 +59,5 @@ class GearRationsKtTest {
       Grid.Symbol('$', c(3, 8)),
       Grid.Symbol('*', c(5, 8))
     )
-  }
-
-  @Test
-  fun `grid can be parsed`() {
-    parseGrid(input) shouldBe Grid(mapOf(
-      c(0, 0) to '4',
-      c(1, 0) to '6',
-      c(2, 0) to '7',
-      c(5, 0) to '1',
-      c(6, 0) to '1',
-      c(7, 0) to '4',
-
-      c(3, 1) to '*',
-
-      c(2, 2) to '3',
-      c(3, 2) to '5',
-      c(6, 2) to '6',
-      c(7, 2) to '3',
-      c(8, 2) to '3',
-
-      c(6, 3) to '#',
-
-      c(0, 4) to '6',
-      c(1, 4) to '1',
-      c(2, 4) to '7',
-      c(3, 4) to '*',
-
-      c(5, 5) to '+',
-      c(7, 5) to '5',
-      c(8, 5) to '8',
-
-      c(2, 6) to '5',
-      c(3, 6) to '9',
-      c(4, 6) to '2',
-
-      c(6, 7) to '7',
-      c(7, 7) to '5',
-      c(8, 7) to '5',
-
-      c(3, 8) to '$',
-      c(5, 8) to '*',
-
-      c(1, 9) to '6',
-      c(2, 9) to '6',
-      c(3, 9) to '4',
-      c(5, 9) to '5',
-      c(6, 9) to '9',
-      c(7, 9) to '8',
-    ), 10, 10)
   }
 }

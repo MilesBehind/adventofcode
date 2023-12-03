@@ -1,6 +1,8 @@
 package de.smartsteuer.frank.adventofcode2023.day03
 
 import de.smartsteuer.frank.adventofcode2023.day03.Coordinate.Companion.c
+import de.smartsteuer.frank.adventofcode2023.day03.Grid.Symbol
+import de.smartsteuer.frank.adventofcode2023.day03.Grid.Number
 import de.smartsteuer.frank.adventofcode2023.lines
 
 fun main() {
@@ -10,19 +12,17 @@ fun main() {
 }
 
 internal fun part1(grid: Grid): Int {
-  val numbers = grid.findNumbers()
-  val symbolCoordinates = grid.findSymbols().map { it.cell }
-  return numbers.filter { number ->
+  val symbolCoordinates = grid.symbols.map { it.cell }
+  return grid.numbers.filter { number ->
     number.cells.any { cell -> cell.neighbours().any { neighbour -> neighbour in symbolCoordinates } }
   }.sumOf { it.value }
 }
 
 internal fun part2(grid: Grid): Int {
-  val numbers = grid.findNumbers()
-  val gears = grid.findSymbols().filter { it.symbol == '*' }
+  val gears = grid.symbols.filter { it.symbol == '*' }
   val adjacentNumbers = gears.map { gear ->
     gear.cell.neighbours().map { neighbour ->
-      numbers.filter { number -> neighbour in number.cells }
+      grid.numbers.filter { number -> neighbour in number.cells }
     }.filter { it.isNotEmpty() }.toSet().flatten()
   }.filter { it.size == 2 }
   return adjacentNumbers.sumOf { it.first().value * it.last().value }
@@ -39,39 +39,22 @@ internal data class Coordinate(val x: Int, val y: Int) {
   )
 }
 
-internal data class Grid(val cells: Map<Coordinate, Char>, val width: Int, val height: Int) {
+internal data class Grid(val numbers: Set<Number>, val symbols: Set<Symbol>) {
   data class Number(val value: Int, val cells: Set<Coordinate>)
   data class Symbol(val symbol: Char, val cell: Coordinate)
-
-  fun findNumbers(): List<Number> {
-    val result = mutableListOf<Number>()
-    (0..height).forEach { y ->
-      var number: Number? = null
-      (0..width).forEach { x ->
-        val c = c(x, y)
-        val digit = if (cells[c]?.isDigit() == true) cells[c]?.digitToInt()!! else -1
-        if (digit >= 0) {
-          number = if (number == null) Number(digit, setOf(c)) else Number(number!!.value * 10 + digit, number!!.cells + c)
-        } else {
-          if (number != null) result += number!!
-          number = null
-        }
-      }
-    }
-    return result
-  }
-
-  fun findSymbols(): List<Symbol> =
-    cells.filter { cells[it.key] != null && cells[it.key]?.isDigit() == false }.map { Symbol(it.value, it.key) }
 }
 
 internal fun parseGrid(lines: List<String>): Grid {
-  val cells = buildMap {
-    lines.mapIndexed { y, line ->
-      line.mapIndexed { x, c ->
-        if (c != '.') put(Coordinate(x, y), c)
-      }
+  tailrec fun parseGrid(x: Int, y: Int, number: Number, numbers: Set<Number>, symbols: Set<Symbol>, digits: Boolean): Grid {
+    val newNumbers = if (digits) numbers + number else numbers
+    if (x >= lines.first().length) return parseGrid(0, y + 1, number, newNumbers, symbols, false)
+    if (y >= lines.size) return Grid(newNumbers, symbols)
+    return when {
+      lines[y][x].isDigit() -> parseGrid(x + 1, y, Number((if (digits) number.value * 10 else 0) + lines[y][x].digitToInt(),
+                                                          (if (digits) number.cells else emptySet()) + c(x, y)), numbers, symbols, true)
+      lines[y][x] == '.'    -> parseGrid(x + 1, y, number, newNumbers, symbols, false)
+      else                  -> parseGrid(x + 1, y, number, newNumbers, symbols + Symbol(lines[y][x], c(x, y)), false)
     }
   }
-  return Grid(cells, lines.first().length, lines.size)
+  return parseGrid(0, 0, Number(0, emptySet()), emptySet(), emptySet(), false)
 }
