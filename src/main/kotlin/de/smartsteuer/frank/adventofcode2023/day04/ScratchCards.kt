@@ -11,16 +11,16 @@ fun main() {
 internal fun part1(scratchCards: List<ScratchCard>): Int =
   scratchCards.sumOf { scratchCard ->
     val hits = scratchCard.computeHits()
-    (if (hits.isNotEmpty()) (1 shl (hits.size - 1)) else 0)
+    if (hits.isNotEmpty()) (1 shl (hits.size - 1)) else 0
   }
 
 internal fun part2(scratchCards: List<ScratchCard>): Int {
   tailrec fun computeCardCopies(scratchCardIndex: Int, copyIndex: Int, copyCounts: List<Int>): List<Int> {
     if (scratchCardIndex >= scratchCards.size) return copyCounts
     if (copyIndex >= copyCounts[scratchCardIndex]) return computeCardCopies(scratchCardIndex + 1, 0, copyCounts)
-    val scratchCard = scratchCards[scratchCardIndex]
-    val hitCount = scratchCard.computeHits().size
-    val copies   = scratchCard.id..<scratchCard.id + hitCount
+    val scratchCard   = scratchCards[scratchCardIndex]
+    val hitCount      = scratchCard.computeHits().size
+    val copies        = scratchCard.id..<scratchCard.id + hitCount
     val newCopyCounts = copies.fold(copyCounts) { acc, index -> acc.increment(index) }
     return computeCardCopies(scratchCardIndex, copyIndex + 1, newCopyCounts)
   }
