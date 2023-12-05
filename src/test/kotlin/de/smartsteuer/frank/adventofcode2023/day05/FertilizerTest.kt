@@ -62,23 +62,4 @@ class FertilizerTest {
       Mapping("humidity",    "location",    listOf(Range(60, 56, 37), Range(56, 93, 4))),
     ))
   }
-
-  @Test
-  fun `almanac finds mappings`() {
-    val almanac = parseAlmanac(input)
-    almanac.findMappingBySource     ("seed").from        shouldBe "seed"
-    almanac.findMappingBySource     ("soil").from        shouldBe "soil"
-    almanac.findMappingBySource     ("fertilizer").from  shouldBe "fertilizer"
-    almanac.findMappingBySource     ("water").from       shouldBe "water"
-    almanac.findMappingBySource     ("light").from       shouldBe "light"
-    almanac.findMappingBySource     ("temperature").from shouldBe "temperature"
-    almanac.findMappingBySource     ("humidity").from    shouldBe "humidity"
-    almanac.findMappingByDestination("soil").to          shouldBe "soil"
-    almanac.findMappingByDestination("fertilizer").to    shouldBe "fertilizer"
-    almanac.findMappingByDestination("water").to         shouldBe "water"
-    almanac.findMappingByDestination("light").to         shouldBe "light"
-    almanac.findMappingByDestination("temperature").to   shouldBe "temperature"
-    almanac.findMappingByDestination("humidity").to      shouldBe "humidity"
-    almanac.findMappingByDestination("location").to      shouldBe "location"
-  }
 }
