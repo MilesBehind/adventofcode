@@ -70,17 +70,16 @@ internal data class Range(val destinationStart: Long, val sourceStart: Long, val
 }
 
 internal fun parseAlmanac(lines: List<String>): Almanac {
-  val seeds = lines.first().drop("seeds: ".length).split(" ").map { it.trim().toLong() }
-  val mappingIndexes = lines.indices.filter { lines[it].isNotEmpty() && !lines[it].first().isDigit() }.drop(1)
-  val mappings = mappingIndexes.map { index ->
-    val (from, to) = """(\w+)-to-(\w+) map:""".toRegex().matchEntire(lines[index])?.groupValues?.drop(1) ?: throw IllegalStateException("could not parse ${lines[index]}")
-    val firstRangeIndex = index + 1
-    val lastRangeIndex  = (lines.indices.drop(firstRangeIndex).firstOrNull { lines[it].isBlank() } ?: lines.size) - 1
-    val ranges = (firstRangeIndex..lastRangeIndex).map { lines[it] }.map { line ->
-      val (destinationStart, sourceStart, rangeLength) = line.split(" ").map { it.trim().toLong() }
-      Range(destinationStart, sourceStart, rangeLength)
+  tailrec fun parseMappings(index: Int, ranges: List<Range>, mapping: Mapping, mappings: List<Mapping>): List<Mapping> {
+    if (index >= lines.size) return mappings + mapping.copy(ranges = ranges)
+    if (lines[index].isBlank()) return parseMappings(index + 1, emptyList(), mapping, mappings + mapping.copy(ranges = ranges))
+    if (lines[index].first().isDigit()) {
+      val (destinationStart, sourceStart, rangeLength) = lines[index].split(" ").map { it.trim().toLong() }
+      return parseMappings(index + 1, ranges + Range(destinationStart, sourceStart, rangeLength), mapping, mappings)
     }
-    Mapping(from, to, ranges)
+    val (from, to) = """(\w+)-to-(\w+) map:""".toRegex().matchEntire(lines[index])?.groupValues?.drop(1) ?: throw IllegalStateException("could not parse ${lines[index]}")
+    return parseMappings(index + 1, emptyList(), Mapping(from, to, emptyList()), mappings)
   }
-  return Almanac(seeds, mappings)
+  val seeds = lines.first().drop("seeds: ".length).split(" ").map { it.trim().toLong() }
+  return Almanac(seeds, parseMappings(2, emptyList(), Mapping("", "", emptyList()), emptyList()))
 }
