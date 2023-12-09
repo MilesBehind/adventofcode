@@ -18,26 +18,21 @@ internal fun part2(histories: List<History>): Long =
 internal data class History(val numbers: List<Int>) {
   private tailrec fun computeDifferences(result: List<List<Int>>): List<List<Int>> = when {
     result.last().all { it == 0 } -> result
-    else                          -> computeDifferences(result.toMutableList().apply { add(result.last().computeDifferences()) })
-  }
-
-  private tailrec fun computeNextNumber(differences: List<List<Int>>, index: Int, result: Int, computeResult: (Int, List<Int>) -> Int): Int = when {
-    index == 0 -> result
-    else       -> computeNextNumber(differences, index - 1, computeResult(result, differences[index - 1]), computeResult)
+    else                          -> computeDifferences(result + listOf (result.last().computeDifferences()))
   }
 
   fun computeNextNumber(): Int =
-    computeDifferences(listOf(numbers)).let { differences: List<List<Int>> ->
-      computeNextNumber(differences, differences.lastIndex, 0) { result, value -> result + value.last() }
+    computeDifferences(listOf(numbers)).let { differences ->
+      differences.reversed().drop(1).fold(0) { acc, list -> acc + list.last() }
     }
 
   fun computePreviousNumber(): Int =
-    computeDifferences(listOf(numbers)).let { differences: List<List<Int>> ->
-      computeNextNumber(differences, differences.lastIndex, 0) { result, value -> value.first() - result }
+    computeDifferences(listOf(numbers)).let { differences ->
+      differences.reversed().drop(1).fold(0) { acc, list -> list.first() - acc }
     }
 }
 
-internal fun List<Int>.computeDifferences() = this.zipWithNext().map { (first, second) -> second - first }
+internal fun List<Int>.computeDifferences(): List<Int> = this.zipWithNext().map { (first, second) -> second - first }
 
 internal fun parseHistories(lines: List<String>): List<History> =
   lines.map { line ->
