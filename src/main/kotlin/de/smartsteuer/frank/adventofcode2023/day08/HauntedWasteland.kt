@@ -36,11 +36,8 @@ internal data class DesertMap(val directions: String, val branches: Map<String, 
 internal fun lcm(values: List<Long>): Long =
   values.drop(1).fold(values.first()) { acc, value -> max(acc, lcm(acc, value)) }
 
-internal fun lcm(number1: Long, number2: Long): Long {
-  if (number1 == 0L || number2 == 0L) return 0
-  val gcd = gcd(number1, number2)
-  return abs(number1 * number2) / gcd
-}
+internal fun lcm(number1: Long, number2: Long): Long =
+  if (number1 == 0L || number2 == 0L) 0 else abs(number1 * number2) / gcd(number1, number2)
 
 internal tailrec fun gcd(number1: Long, number2: Long): Long {
   if (number1 == 0L || number2 == 0L) return number1 + number2

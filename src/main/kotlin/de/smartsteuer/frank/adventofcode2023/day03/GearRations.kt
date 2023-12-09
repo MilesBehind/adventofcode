@@ -12,7 +12,7 @@ fun main() {
 }
 
 internal fun part1(grid: Grid): Int {
-  val symbolCoordinates = grid.symbols.map { it.cell }
+  val symbolCoordinates = grid.symbols.map { it.cell }.toSet()
   return grid.numbers.filter { number ->
     number.cells.any { cell -> cell.neighbours().any { neighbour -> neighbour in symbolCoordinates } }
   }.sumOf { it.value }

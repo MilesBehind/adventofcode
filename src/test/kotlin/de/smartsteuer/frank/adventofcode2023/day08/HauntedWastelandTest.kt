@@ -79,5 +79,6 @@ class HauntedWastelandTest {
   fun `lcm with multiple values`() {
     lcm(listOf(12, 18)) shouldBe 36
     lcm(listOf(3, 4, 5)) shouldBe 60
+    lcm(listOf(2, 4, 6)) shouldBe 12
   }
 }
