@@ -16,9 +16,9 @@ internal fun part2(pipeMap: PipeMap): Int =
   pipeMap.computeInnerArea().size
 
 internal data class PipeMap(val start: Tile, val width: Int, val height: Int, val tiles: Map<Pos, Tile>) {
-  fun computeCycle(): List<Pos> {
-    tailrec fun computeCycle(pos: Pos, visited: MutableSet<Pos>): List<Pos> {
-      if (pos == start.pos) return visited.toList()
+  fun computeCycle(): Set<Pos> {
+    tailrec fun computeCycle(pos: Pos, visited: MutableSet<Pos>): Set<Pos> {
+      if (pos == start.pos) return visited
       val tile = tiles.getValue(pos)
       val next = if (tile.to in visited && tile.to != start.pos) tile.from else tile.to
       return computeCycle(next, visited.apply { add(pos) })
@@ -27,7 +27,7 @@ internal data class PipeMap(val start: Tile, val width: Int, val height: Int, va
   }
 
   fun computeInnerArea(): Set<Pos> {
-    val loop = computeCycle().toSet()
+    val loop = computeCycle()
     tailrec fun computeInnerArea(pos: Pos, inside: Boolean, result: Set<Pos>): Set<Pos> {
       if (pos.y >= height) return result
       if (pos.x >= width) return computeInnerArea(Pos(0, pos.y + 1), false, result)
