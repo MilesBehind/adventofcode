@@ -30,19 +30,13 @@ internal data class Image(val width: Int, val height: Int, val galaxies: Set<Pos
   }
 
   fun distances(): List<Int> =
-    galaxies.toList().uniquePairs().map { (galaxy1, galaxy2) ->
+    galaxies.toList().pairs().map { (galaxy1, galaxy2) ->
       abs(galaxy2.x - galaxy1.x) + abs(galaxy2.y - galaxy1.y)
     }
 }
 
-fun <T> List<T>.pairs(): List<Pair<T, T>> = flatMap { first -> map { second -> Pair(first, second) } }
-
-fun <T> List<T>.uniquePairs(): List<Pair<T, T>> =
-  pairs()
-    .filter { (first, second) -> first != second }
-    .map { setOf(it.first, it.second) }
-    .toSet()
-    .map { Pair(it.first(), it.last()) }
+fun <T> List<T>.pairs(): List<Pair<T, T>> =
+  flatMapIndexed { index, first -> drop(index + 1).map { second -> Pair(first, second) } }
 
 internal data class Pos(val x: Int, val y: Int)
 

@@ -53,13 +53,8 @@ class CosmicExpansionTest {
   }
 
   @Test
-  fun `pairs can be found`() {
-    listOf(1, 2, 3).pairs() shouldBe listOf(1 to 1, 1 to 2, 1 to 3, 2 to 1, 2 to 2, 2 to 3, 3 to 1, 3 to 2, 3 to 3)
-  }
-
-  @Test
   fun `unique pairs can be found`() {
-    listOf(1, 2, 3).uniquePairs() shouldBe listOf(1 to 2, 1 to 3, 2 to 3)
+    listOf(1, 2, 3).pairs() shouldBe listOf(1 to 2, 1 to 3, 2 to 3)
   }
 }
 
