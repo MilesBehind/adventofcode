@@ -16,7 +16,7 @@ internal fun part1(image: Image): Int =
 internal fun part2(image: Image): Long =
   image.expand(1_000_000).distances().sumOf { it.toLong() }
 
-internal data class Image(val width: Int, val height: Int, val galaxies: Set<Pos>) {
+internal data class Image(val width: Int, val height: Int, val galaxies: List<Pos>) {
   fun findEmptyColumns(): List<Int> = (0..<width).filter  { x -> galaxies.none { it.x == x } }
   fun findEmptyRows():    List<Int> = (0..<height).filter { y -> galaxies.none { it.y == y } }
 
@@ -26,11 +26,11 @@ internal data class Image(val width: Int, val height: Int, val galaxies: Set<Pos
     return Image(width + emptyColumns.size, height + emptyRows.size, galaxies.map { galaxy ->
       Pos(emptyColumns.count { it < galaxy.x } * (expansion - 1) + galaxy.x,
           emptyRows.count    { it < galaxy.y } * (expansion - 1) + galaxy.y)
-    }.toSet())
+    })
   }
 
   fun distances(): List<Int> =
-    galaxies.toList().pairs().map { (galaxy1, galaxy2) ->
+    galaxies.pairs().map { (galaxy1, galaxy2) ->
       abs(galaxy2.x - galaxy1.x) + abs(galaxy2.y - galaxy1.y)
     }
 }
@@ -45,4 +45,4 @@ internal fun parseImage(lines: List<String>): Image =
     line.mapIndexedNotNull { x, c ->
       if (c == '#') Pos(x, y) else null
     }
-  }.toSet())
+  })

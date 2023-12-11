@@ -30,7 +30,7 @@ class CosmicExpansionTest {
 
   @Test
   fun `image can be parsed`() {
-    parseImage(input) shouldBe Image(10, 10, setOf(
+    parseImage(input) shouldBe Image(10, 10, listOf(
       Pos(3, 0), Pos(7, 1), Pos(0, 2), Pos(6, 4), Pos(1, 5), Pos(9, 6), Pos(7, 8), Pos(0, 9), Pos(4, 9)
     ))
   }
@@ -47,7 +47,7 @@ class CosmicExpansionTest {
 
   @Test
   fun `galaxies can be expanded`() {
-    parseImage(input).expand() shouldBe Image(13, 12, setOf(
+    parseImage(input).expand() shouldBe Image(13, 12, listOf(
       Pos(4, 0), Pos(9, 1), Pos(0, 2), Pos(8, 5), Pos(1, 6), Pos(12, 7), Pos(9, 10), Pos(0, 11), Pos(5, 11)
     ))
   }
