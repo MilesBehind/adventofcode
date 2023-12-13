@@ -21,8 +21,8 @@ internal data class SpringMap(val rows: List<Row>) {
     private val cachedResults = mutableMapOf<Pair<String, List<Int>>, Long>()
 
     fun countSolutions(tiles: String = this.tiles, records: List<Int> = this.records): Long {
-      if (tiles.isEmpty()) return (if (records.isEmpty()) 1 else 0)
-      if (records.isEmpty()) return (if ('#' in tiles) 0 else 1)
+      if (tiles.isEmpty())   return if (records.isEmpty()) 1 else 0
+      if (records.isEmpty()) return if ('#' in tiles)      0 else 1
       return cachedResults.getOrPut(tiles to records) {
         (if (tiles.first() in ".?") tryOperationalTile(tiles, records) else 0) +
         (if (tiles.first() in "#?") tryDamagedTile    (tiles, records) else 0)
