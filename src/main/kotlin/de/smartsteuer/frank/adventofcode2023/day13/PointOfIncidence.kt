@@ -2,41 +2,37 @@ package de.smartsteuer.frank.adventofcode2023.day13
 
 import de.smartsteuer.frank.adventofcode2022.day01.split
 import de.smartsteuer.frank.adventofcode2023.lines
+import java.lang.Integer.bitCount
 import kotlin.math.min
 import kotlin.time.measureTime
 
 fun main() {
-  val mirrorMaps = parseMap(lines("/adventofcode2023/day13/"))
+  val mirrorMaps = parseMap(lines("/adventofcode2023/day13/map.txt"))
   measureTime { println("part 1: ${part1(mirrorMaps)}") }.also { println("part 1 took $it") }
   measureTime { println("part 2: ${part2(mirrorMaps)}") }.also { println("part 2 took $it") }
 }
 
-internal fun part1(mirrorMaps: List<MirrorMap>): Long {
-  return 0
-}
+internal fun part1(mirrorMaps: List<MirrorMap>): Int =
+  mirrorMaps.mapNotNull { it.findVerticalMirror() }.sum() + 100 * mirrorMaps.mapNotNull { it.findHorizontalMirror() }.sum()
 
-internal fun part2(mirrorMaps: List<MirrorMap>): Long {
-  return 0
-}
+internal fun part2(mirrorMaps: List<MirrorMap>): Int =
+  mirrorMaps.mapNotNull { it.findVerticalMirror(1) }.sum() + 100 * mirrorMaps.mapNotNull { it.findHorizontalMirror(1) }.sum()
 
 internal data class MirrorMap(val width: Int, val height: Int, val rowBits: List<Int>, val columnBits: List<Int>) {
-  fun findVerticalMirror(expectedDefects: Int = 0): Int? {
-    val mirroredRowBits = rowBits.map { it reverse width }
-    return (1..<width).firstOrNull { x ->
-      rowBits.zip(mirroredRowBits).forEach { (bits, mirroredBits)  ->
-        val relevantBitCount     = min(x, width - x)
-        val relevantBits         = (bits         shr (width - 2 * x).coerceAtLeast(0)) clearLeftBits (width - x)
-        val relevantMirroredBits = (mirroredBits shl (width -     x).coerceAtLeast(0)) clearLeftBits (width - x)
-        println("x = $x, bits = ${bits.asBinary(width)}, mirroredBits = ${mirroredBits.asBinary(width)}")
-        println("relevantBitCount = $relevantBitCount, relevantBits = ${relevantBits.asBinary(relevantBitCount)}, relevantMirroredBits = ${relevantMirroredBits.asBinary(relevantBitCount)}")
-        //Integer.bitCount(relevantBits xor relevantMirroredBits) == expectedDefects
-      }
-      false
-    }
+  fun findVerticalMirror  (expectedDefects: Int = 0): Int? = findMirror(rowBits,    width,  expectedDefects)
+  fun findHorizontalMirror(expectedDefects: Int = 0): Int? = findMirror(columnBits, height, expectedDefects)
+
+  private fun findMirror(input: List<Int>, size: Int, expectedDefects: Int): Int? {
+    return (1..<size).firstOrNull { pos ->
+      input.sumOf { bits  ->
+        val relevantBitCount = min(pos, size - pos)
+        val rightBits        = bits.getSlice(pos, pos - relevantBitCount + 1)
+        val leftBitsMirrored = bits.getSlice(pos + relevantBitCount, pos + 1).reverse(relevantBitCount)
+        bitCount(rightBits xor leftBitsMirrored)
+      } == expectedDefects
+    }?.let { size - it }
   }
 }
-
-internal fun Int.asBinary(digits: Int) = toString(2).padStart(digits, '0').take(digits)
 
 internal infix fun Int.reverse(bitCount: Int): Int {
   var b = 0
@@ -49,9 +45,9 @@ internal infix fun Int.reverse(bitCount: Int): Int {
   return b
 }
 
-internal val masks = (2..20).fold(listOf(0, 1)) { acc, _ -> acc + (acc.last() shl 1 or 1) }
+private val masks = (2..20).fold(listOf(0, 1)) { acc, _ -> acc + (acc.last() shl 1 or 1) }
 
-internal infix fun Int.clearLeftBits(bitCountToRemain: Int): Int = this and masks[bitCountToRemain]
+internal fun Int.getSlice(msb: Int, lsb: Int): Int = (this and masks[msb]) shr (lsb - 1)
 
 internal fun parseMap(lines: List<String>): List<MirrorMap> =
   lines.split { it == "" }.map { mapLines ->

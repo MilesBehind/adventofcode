@@ -1,6 +1,7 @@
 package de.smartsteuer.frank.adventofcode2023.day13
 
 import io.kotest.matchers.*
+import io.kotest.matchers.nulls.shouldBeNull
 import org.junit.jupiter.api.Test
 
 class PointOfIncidenceTest {
@@ -29,7 +30,7 @@ class PointOfIncidenceTest {
 
   @Test
   fun `part 2`() {
-    part2(parseMap(input)) shouldBe 0
+    part2(parseMap(input)) shouldBe 400
   }
 
   @Test
@@ -49,34 +50,38 @@ class PointOfIncidenceTest {
   fun `vertical mirror can be found`() {
     val mirrorMaps = parseMap(input)
     mirrorMaps[0].findVerticalMirror() shouldBe 5
+    mirrorMaps[1].findVerticalMirror().shouldBeNull()
   }
+
+  @Test
+  fun `horizontal mirror can be found`() {
+    val mirrorMaps = parseMap(input)
+    mirrorMaps[0].findHorizontalMirror().shouldBeNull()
+    mirrorMaps[1].findHorizontalMirror() shouldBe 4
+  }
+
+  private fun Int.asBinary(digits: Int) = toString(2).padStart(digits, '0').take(digits)
 
   @Test
   fun `bit sets can be mirrored`() {
     listOf(
       "0101100110",
       "0000111111"
-    ).map { it.toInt(2).reverse(10).toString(2).padStart(10, '0').take(10) } shouldBe listOf(
+    ).map { it.toInt(2).reverse(10).asBinary(10) } shouldBe listOf(
       "0110011010",
       "1111110000"
     )
   }
 
   @Test
-  fun `bit sets can masked`() {
-    println(masks)
-    "0101100110".toInt(2).clearLeftBits(2).toString(2).padStart(10, '0').take(10) shouldBe "0000000010"
-    List(10) { "0101100110" }.mapIndexed { index, input -> input.toInt(2).clearLeftBits(index + 1).toString(2).padStart(10, '0').take(10) } shouldBe listOf(
-      "0000000000",
-      "0000000010",
-      "0000000110",
-      "0000000110",
-      "0000000110",
-      "0000100110",
-      "0001100110",
-      "0001100110",
-      "0101100110",
-      "0101100110",
-    )
+  fun `bit sets can sliced`() {
+    "0101100110".toInt(2).let { input ->
+      input.getSlice(10, 1).asBinary(10) shouldBe   "0101100110"
+      input.getSlice(10, 2).asBinary(10) shouldBe  "0010110011"
+      input.getSlice(10, 3).asBinary(10) shouldBe "0001011001"
+      input.getSlice(9, 3).asBinary(10) shouldBe "0001011001"
+      input.getSlice(8, 2).asBinary(10) shouldBe  "0000110011"
+      input.getSlice(7, 1).asBinary(10) shouldBe   "0001100110"
+    }
   }
 }
