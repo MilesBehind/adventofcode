@@ -13,7 +13,7 @@ internal fun part1(platform: Platform): Long =
   platform.tilt().computeLoad()
 
 internal fun part2(platform: Platform): Long =
-  platform.cycleUntilNotChanged(1_000_000_000).computeLoad()
+  platform.cycle(1_000_000_000).computeLoad()
 
 internal data class Pos(val x: Int, val y: Int)
 
@@ -39,7 +39,7 @@ internal data class Platform(val width: Int, val height: Int, val roundRocks: Se
     return (1..4).fold(this) { acc, _ -> acc.tilt().rotateClockwise() }
   }
 
-  fun cycleUntilNotChanged(cycleCount: Int): Platform {
+  fun cycle(cycleCount: Int): Platform {
     val previousRoundRocks = LinkedHashMap<Set<Pos>, Int>()
     tailrec fun cycleUntilNotChanged(count: Int, checkForCycle: Boolean, platFormBeforeCycle: Platform): Platform {
       if (count >= cycleCount) return platFormBeforeCycle
