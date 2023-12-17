@@ -9,7 +9,7 @@ fun main() {
   measureTime { println("part 2: ${part2(sequence)}") }.also { println("part 2 took $it") }
 }
 
-internal fun part1(sequence: List<String>): Int = sequence.sumOf { it.hash() }
+internal fun part1(sequence: List<String>): Int = sequence.sumOf { hash(it) }
 
 internal fun part2(sequence: List<String>): Int {
   val boxes = List(256) { mutableMapOf<String, Int>() }
