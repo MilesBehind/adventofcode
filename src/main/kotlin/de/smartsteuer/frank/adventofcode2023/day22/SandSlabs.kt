@@ -72,30 +72,11 @@ internal data class Brick(val from: Pos, val to: Pos) {
   private  val minY = if (from.y < to.y) from.y else to.y
   private  val maxY = if (from.y > to.y) from.y else to.y
   internal val minZ = if (from.z < to.z) from.z else to.z
-  internal val maxZ = if (from.z > to.z) from.z else to.z
+  private  val maxZ = if (from.z > to.z) from.z else to.z
   fun minArea(): List<Pos> = (minX..maxX).flatMap { x -> (minY..maxY).map { y -> Pos(x, y, minZ) } }
   fun maxArea(): List<Pos> = (minX..maxX).flatMap { x -> (minY..maxY).map { y -> Pos(x, y, maxZ) } }
   fun volume():  List<Pos> = (minX..maxX).flatMap { x -> (minY..maxY).flatMap { y -> (minZ..maxZ).map { z -> Pos(x, y, z) } } }
   fun moveZBy(deltaZ: Int) = Brick(from.moveByZ(deltaZ), to.moveByZ(deltaZ))
-}
-
-internal fun Set<Pos>.visualize() {
-  if (isEmpty()) return
-  val minX = this.minOf { it.x }
-  val maxX = this.maxOf { it.x }
-  val minY = this.minOf { it.y }
-  val maxY = this.maxOf { it.y }
-  val minZ = this.minOf { it.z }
-  val maxZ = this.maxOf { it.z }
-  (minY..maxY).forEach { y ->
-    (minZ..maxZ).forEach { z ->
-      print("${z.toString().padStart(5, ' ')}  ")
-      (minX..maxX).forEach { x ->
-        print(if (Pos(x, y, z) in this) '#' else '.')
-      }
-    }
-    println("")
-  }
 }
 
 internal fun parseBricks(lines: List<String>): List<Brick> =
