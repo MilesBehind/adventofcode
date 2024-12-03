@@ -20,7 +20,8 @@ internal fun part2(reports: List<List<Int>>): Int =
   reports.count { report ->
     (report.indices.map { indexToDrop -> report.filterIndexed { index, _  -> index != indexToDrop } } + listOf(report)).any { modifiedReport ->
       modifiedReport.zipWithNext { first, second -> first - second }.let { differences ->
-        differences.all { it in 1..3 } || differences.all { it in -1 downTo -3 }
+        differences.all { it in 1..3 } ||
+        differences.all { it in -1 downTo -3 }
       }
     }
   }
