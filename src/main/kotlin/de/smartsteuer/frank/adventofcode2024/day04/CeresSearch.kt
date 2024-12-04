@@ -16,37 +16,23 @@ object CeresSearch {
     (0 until words.width).sumOf { x ->
       (0 until words.height).sumOf { y ->
         Pos(x, y).wordIndexes().count { indexes ->
-          indexes.map { pos -> words.chars[pos] } == listOf('X', 'M', 'A', 'S')
+          indexes.map { pos -> words.chars[pos] }.joinToString(separator = "") == "XMAS"
         }
       }
     }
 
   fun part2(words: Words): Int =
     (0 until words.width).sumOf { x ->
-      (0 until words.height).sumOf { y ->
-        Pos(x, y).crossIndexes().count { indexes ->
-          indexes.map { pos -> words.chars[pos] } == listOf('M', 'A', 'S',   'M', 'A', 'S')
-        }
+      (0 until words.height).count { y ->
+        Pos(x, y).crossIndexes().map { pos -> words.chars[pos] }.joinToString(separator = "") in listOf("MASMAS", "MASSAM", "SAMMAS", "SAMSAM")
       }
     }
 
   data class Pos(val x: Int, val y: Int) {
-    fun wordIndexes() = listOf(
-      listOf(Pos(x, y), Pos(x + 1, y    ), Pos(x + 2, y    ), Pos(x + 3, y    )),
-      listOf(Pos(x, y), Pos(x - 1, y    ), Pos(x - 2, y    ), Pos(x - 3, y    )),
-      listOf(Pos(x, y), Pos(x,     y + 1), Pos(x,     y + 2), Pos(x,     y + 3)),
-      listOf(Pos(x, y), Pos(x,     y - 1), Pos(x,     y - 2), Pos(x,     y - 3)),
-      listOf(Pos(x, y), Pos(x + 1, y + 1), Pos(x + 2, y + 2), Pos(x + 3, y + 3)),
-      listOf(Pos(x, y), Pos(x + 1, y - 1), Pos(x + 2, y - 2), Pos(x + 3, y - 3)),
-      listOf(Pos(x, y), Pos(x - 1, y + 1), Pos(x - 2, y + 2), Pos(x - 3, y + 3)),
-      listOf(Pos(x, y), Pos(x - 1, y - 1), Pos(x - 2, y - 2), Pos(x - 3, y - 3)),
-    )
-    fun crossIndexes() = listOf(
-      listOf(Pos(x,     y    ), Pos(x + 1, y + 1), Pos(x + 2, y + 2),   Pos(x + 2, y    ), Pos(x + 1, y + 1), Pos(x,     y + 2)),
-      listOf(Pos(x,     y    ), Pos(x + 1, y + 1), Pos(x + 2, y + 2),   Pos(x,     y + 2), Pos(x + 1, y + 1), Pos(x + 2, y    )),
-      listOf(Pos(x + 2, y + 2), Pos(x + 1, y + 1), Pos(x,     y    ),   Pos(x + 2, y    ), Pos(x + 1, y + 1), Pos(x,     y + 2)),
-      listOf(Pos(x + 2, y + 2), Pos(x + 1, y + 1), Pos(x,     y    ),   Pos(x,     y + 2), Pos(x + 1, y + 1), Pos(x + 2, y    )),
-    )
+    fun wordIndexes() = listOf(1 to 0, -1 to 0, 0 to 1, 0 to -1, 1 to 1, 1 to -1, -1 to 1, -1 to -1)
+      .map { (dx, dy) -> (0..3).map { (it * dx) to (it * dy) }.map { (dx, dy) -> Pos(x + dx, y + dy) } }
+
+    fun crossIndexes() = listOf(Pos(x, y), Pos(x + 1, y + 1), Pos(x + 2, y + 2),   Pos(x + 2, y), Pos(x + 1, y + 1), Pos(x, y + 2))
   }
 
   data class Words(val chars: Map<Pos, Char>, val width: Int, val height: Int)
