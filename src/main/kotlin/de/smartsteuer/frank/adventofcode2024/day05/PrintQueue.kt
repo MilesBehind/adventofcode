@@ -1,13 +1,14 @@
 package de.smartsteuer.frank.adventofcode2024.day05
 
-import de.smartsteuer.frank.adventofcode2022.day01.split
 import de.smartsteuer.frank.adventofcode2024.day05.PrintQueue.parsePageUpdates
+import de.smartsteuer.frank.adventofcode2024.day05.PrintQueue.part1
+import de.smartsteuer.frank.adventofcode2024.day05.PrintQueue.part2
 import de.smartsteuer.frank.adventofcode2024.lines
 
 fun main() {
   val pageUpdates = lines("/adventofcode2024/day05/page-update.txt").parsePageUpdates()
-  println("part 1: ${PrintQueue.part1(pageUpdates)}")
-  println("part 2: ${PrintQueue.part2(pageUpdates)}")
+  println("part 1: ${part1(pageUpdates)}")
+  println("part 2: ${part2(pageUpdates)}")
 }
 
 object PrintQueue {
@@ -33,8 +34,6 @@ object PrintQueue {
   }
 
   fun List<String>.parsePageUpdates(): PageUpdates =
-    this.split { it.isBlank() }.let { (rules, updates) ->
-      PageUpdates(rules.map   { line -> line.split("|").map { it.toInt() } }.map { Rule(it.first(), it.last()) },
-                  updates.map { line -> line.split(",").map { it.toInt() } })
-    }
+    PageUpdates(takeWhile { it.isNotBlank() }.map         { line -> line.split("|").map { it.toInt() } }.map { Rule(it.first(), it.last()) },
+                dropWhile { it.isNotBlank() }.drop(1).map { line -> line.split(",").map { it.toInt() } })
 }
