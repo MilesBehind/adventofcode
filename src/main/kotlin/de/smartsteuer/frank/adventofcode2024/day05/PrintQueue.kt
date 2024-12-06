@@ -1,27 +1,27 @@
 package de.smartsteuer.frank.adventofcode2024.day05
 
-import de.smartsteuer.frank.adventofcode2024.day05.PrintQueue.parsePageUpdates
-import de.smartsteuer.frank.adventofcode2024.day05.PrintQueue.part1
-import de.smartsteuer.frank.adventofcode2024.day05.PrintQueue.part2
+import de.smartsteuer.frank.adventofcode2024.Day
 import de.smartsteuer.frank.adventofcode2024.lines
 
 fun main() {
-  val pageUpdates = lines("/adventofcode2024/day05/page-update.txt").parsePageUpdates()
-  println("part 1: ${part1(pageUpdates)}")
-  println("part 2: ${part2(pageUpdates)}")
+  PrintQueue.execute(lines("/adventofcode2024/day05/page-update.txt"))
 }
 
-object PrintQueue {
-  fun part1(pageUpdates: PageUpdates): Int =
-    pageUpdates.pages.filter { pages: List<Int> ->
-      pageUpdates.rules.all { it.isSatisfied(pages) }
-    }.sumOf { it[it.size / 2] }
+object PrintQueue: Day {
+  override fun part1(input: List<String>): Long =
+    input.parsePageUpdates().let { pageUpdates ->
+      pageUpdates.pages.filter { pages: List<Int> ->
+        pageUpdates.rules.all { it.isSatisfied(pages) }
+      }.sumOf { it[it.size / 2] }.toLong()
+    }
 
-  fun part2(pageUpdates: PageUpdates): Int =
-    pageUpdates.pages
-      .filterNot { pages: List<Int> -> pageUpdates.rules.all { it.isSatisfied(pages) } }
-      .map { it.sortedWith { x, y -> if (Rule(x, y) in pageUpdates.rules) 1 else if (Rule(y, x) in pageUpdates.rules) - 1 else 0 } }
-      .sumOf { it[it.size / 2] }
+  override fun part2(input: List<String>): Long =
+    input.parsePageUpdates().let { pageUpdates ->
+      pageUpdates.pages
+        .filterNot { pages: List<Int> -> pageUpdates.rules.all { it.isSatisfied(pages) } }
+        .map { it.sortedWith { x, y -> if (Rule(x, y) in pageUpdates.rules) 1 else if (Rule(y, x) in pageUpdates.rules) -1 else 0 } }
+        .sumOf { it[it.size / 2] }.toLong()
+    }
 
   data class PageUpdates(val rules: List<Rule>, val pages: List<List<Int>>)
 

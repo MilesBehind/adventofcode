@@ -41,12 +41,12 @@ class PrintQueueTest {
 
   @Test
   fun `part 1 returns expected result`() {
-    part1(input.parsePageUpdates()) shouldBe 143
+    part1(input) shouldBe 143
   }
 
   @Test
   fun `part 2 returns expected result`() {
-    part2(input.parsePageUpdates()) shouldBe 123
+    part2(input) shouldBe 123
   }
 
   @Test
