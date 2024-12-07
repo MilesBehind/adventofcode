@@ -20,16 +20,11 @@ object BridgeRepair: Day {
     }.sumOf { it.result }
 
   data class Equation(val result: Long, val operands: List<Long>) {
-    fun canBeSolved(operators: List<Operator>, index: Int = 1, intermediateResult: Long = operands.first()): Boolean {
-      if (index >= operands.size) return intermediateResult == result
-      operators.forEach { operator ->
+    fun canBeSolved(operators: List<Operator>, index: Int = 1, intermediateResult: Long = operands.first()): Boolean =
+      index == operands.size && intermediateResult == result || index < operands.size && operators.any { operator ->
         val newIntermediateResult = operator.apply(intermediateResult, operands[index])
-        if (newIntermediateResult <= result) {
-          if (canBeSolved(operators, index + 1, newIntermediateResult)) return true
-        }
+        newIntermediateResult <= result && canBeSolved(operators, index + 1, newIntermediateResult)
       }
-      return false
-    }
   }
 
   sealed interface Operator {
