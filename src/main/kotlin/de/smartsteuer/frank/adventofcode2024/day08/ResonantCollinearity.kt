@@ -42,9 +42,9 @@ object ResonantCollinearity: Day {
   }
 
   fun <T> List<T>.pickTwo(): List<Pair<T, T>> =
-    this.flatMapIndexed { index, value -> this.indices.drop(index + 1).map { value to this[it] } }
+    this.flatMapIndexed { index, value -> this.drop(index + 1).map { value to it } }
 
-  fun <T> T.nullIf(predicate: (T) -> Boolean) = if (predicate(this)) this else null
+  fun <T> T.nullIf(predicate: (T) -> Boolean) = if (!predicate(this)) this else null
 
   fun List<String>.parseMap(): AntennaMap =
     AntennaMap(flatMapIndexed { y, line ->
