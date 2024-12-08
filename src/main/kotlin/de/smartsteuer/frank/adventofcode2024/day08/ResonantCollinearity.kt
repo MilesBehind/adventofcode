@@ -24,7 +24,7 @@ object ResonantCollinearity: Day {
     operator fun contains(pos: Pos) = pos.x in 0 until width && pos.y in 0 until height
 
     fun findAntennasOfSameFrequencies(): List<List<Pos>> =
-      antennas.keys.groupBy { pos -> antennas.values.first { antennas[pos] == it } }.values.toList()
+      antennas.entries.groupBy( { it.value }, { it.key }).values.toList()
 
     fun antiNodes(antenna1: Pos, antenna2: Pos): Pair<Pos, Pos> = (antenna1 - antenna2).let { gap -> (antenna1 + gap) to (antenna2 - gap) }
 
