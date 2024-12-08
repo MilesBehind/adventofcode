@@ -17,9 +17,9 @@ object GuardGallivantAlternative: Day {
   override fun part2(input: List<String>): Long {
     val (map, guard) = input.parseMap()
     val candidatesForNewObstacle = findGuardPositions(map, guard) - guard.pos
-    return candidatesForNewObstacle.filter { candidate ->
+    return candidatesForNewObstacle.parallelStream().filter { candidate ->
       guardIsStuckInLoop(map.copy(obstacles = map.obstacles + (candidate to true)), guard)
-    }.size.toLong()
+    }.toList().size.toLong()
   }
 
   private fun findGuardPositions(map: GuardMap, guardState: GuardState, guardPositions: MutableSet<Pos> = mutableSetOf()): Set<Pos> {

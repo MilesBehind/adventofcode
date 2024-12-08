@@ -15,9 +15,9 @@ object BridgeRepair: Day {
     }.sumOf { it.result }
 
   override fun part2(input: List<String>): Long =
-    input.parseEquations().filter { equation ->
+    input.parseEquations().parallelStream().filter { equation ->
       equation.canBeSolved(listOf(Plus, Times, Concatenate))
-    }.sumOf { it.result }
+    }.toList().sumOf { it.result }
 
   data class Equation(val result: Long, val operands: List<Long>) {
     fun canBeSolved(operators: List<Operator>, index: Int = 1, intermediateResult: Long = operands.first()): Boolean =
