@@ -37,18 +37,18 @@ class ResonantCollinearityTest {
   @Test
   fun `antiNodes are computed as expected`() {
     val map = input.parseMap()
-    map.antiNodes(Pos(4, 3), Pos(5, 5)) shouldBe (Pos(3, 1) to Pos(6, 7))
-    map.antiNodes(Pos(5, 5), Pos(4, 3)) shouldBe (Pos(6, 7) to Pos(3, 1))
+    map.antiNodes(Pos(4, 3), Pos(5, 5), withHarmonics = false) shouldBe setOf(Pos(3, 1), Pos(6, 7))
+    map.antiNodes(Pos(5, 5), Pos(4, 3), withHarmonics = false) shouldBe setOf(Pos(6, 7), Pos(3, 1))
   }
 
   @Test
   fun `antiNodes in line are computed as expected`() {
     val map = input.parseMap()
-    map.antiNodesInLine(Pos(0, 0), Pos(1, 2)) shouldBe setOf(Pos(0, 0), Pos(1, 2), Pos(2, 4), Pos(3, 6), Pos(4, 8), Pos(5, 10))
-    map.antiNodesInLine(Pos(1, 2), Pos(0, 0)) shouldBe setOf(Pos(0, 0), Pos(1, 2), Pos(2, 4), Pos(3, 6), Pos(4, 8), Pos(5, 10))
+    map.antiNodes(Pos(0, 0), Pos(1, 2), withHarmonics = true) shouldBe setOf(Pos(0, 0), Pos(1, 2), Pos(2, 4), Pos(3, 6), Pos(4, 8), Pos(5, 10))
+    map.antiNodes(Pos(1, 2), Pos(0, 0), withHarmonics = true) shouldBe setOf(Pos(0, 0), Pos(1, 2), Pos(2, 4), Pos(3, 6), Pos(4, 8), Pos(5, 10))
 
-    map.antiNodesInLine(Pos(0, 0), Pos(3, 1)) shouldBe setOf(Pos(0, 0), Pos(3, 1), Pos(6, 2), Pos(9, 3))
-    map.antiNodesInLine(Pos(3, 1), Pos(0, 0)) shouldBe setOf(Pos(0, 0), Pos(3, 1), Pos(6, 2), Pos(9, 3))
+    map.antiNodes(Pos(0, 0), Pos(3, 1), withHarmonics = true) shouldBe setOf(Pos(0, 0), Pos(3, 1), Pos(6, 2), Pos(9, 3))
+    map.antiNodes(Pos(3, 1), Pos(0, 0), withHarmonics = true) shouldBe setOf(Pos(0, 0), Pos(3, 1), Pos(6, 2), Pos(9, 3))
   }
 
   @Test

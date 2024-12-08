@@ -13,7 +13,7 @@ object ResonantCollinearity: Day {
     input.parseMap().findAllAntiNodes().size.toLong()
 
   override fun part2(input: List<String>): Long =
-    input.parseMap().findAllAntiNodesInLine().size.toLong()
+    input.parseMap().findAllAntiNodes(withHarmonics = true).size.toLong()
 
   data class Pos(val x: Int, val y: Int) {
     operator fun plus(other: Pos):  Pos = Pos(x + other.x, y + other.y)
@@ -26,25 +26,17 @@ object ResonantCollinearity: Day {
     fun findAntennasOfSameFrequencies(): List<List<Pos>> =
       antennas.entries.groupBy( { it.value }, { it.key }).values.toList()
 
-    fun antiNodes(antenna1: Pos, antenna2: Pos): Pair<Pos, Pos> = (antenna1 - antenna2).let { gap -> (antenna1 + gap) to (antenna2 - gap) }
-
-    fun antiNodesInLine(antenna1: Pos, antenna2: Pos): Set<Pos> =
+    fun antiNodes(antenna1: Pos, antenna2: Pos, withHarmonics: Boolean): Set<Pos> =
       (antenna1 - antenna2).let { gap ->
-        generateSequence(antenna2) { pos -> (pos + gap).let { newPos -> if (newPos in this) newPos else null } }.toSet() +
-        generateSequence(antenna1) { pos -> (pos - gap).let { newPos -> if (newPos in this) newPos else null } }.toSet()
+        if (withHarmonics) generateSequence(antenna2) { pos -> (pos + gap).let { newPos -> if (newPos in this) newPos else null } }.toSet() +
+                           generateSequence(antenna1) { pos -> (pos - gap).let { newPos -> if (newPos in this) newPos else null } }.toSet()
+        else setOf(antenna1 + gap, antenna2 - gap)
       }
 
-    fun findAllAntiNodes(): Set<Pos> =
+    fun findAllAntiNodes(withHarmonics: Boolean = false): Set<Pos> =
       findAntennasOfSameFrequencies().flatMap { antennas: List<Pos> ->
         antennas.pickTwo().flatMap { (antenna1, antenna2) ->
-          antiNodes(antenna1, antenna2).toList().filter { pos -> pos in this }
-        }
-      }.toSet()
-
-    fun findAllAntiNodesInLine(): Set<Pos> =
-      findAntennasOfSameFrequencies().flatMap { antennas: List<Pos> ->
-        antennas.pickTwo().flatMap { (antenna1, antenna2) ->
-          antiNodesInLine(antenna1, antenna2).toList().filter { pos -> pos in this }
+          antiNodes(antenna1, antenna2, withHarmonics).toList().filter { pos -> pos in this }
         }
       }.toSet()
   }
