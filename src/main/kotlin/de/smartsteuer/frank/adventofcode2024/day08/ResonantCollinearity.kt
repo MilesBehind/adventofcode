@@ -24,14 +24,14 @@ object ResonantCollinearity: Day {
     operator fun contains(pos: Pos) = pos.x in 0 until width && pos.y in 0 until height
 
     fun findAntennasOfSameFrequencies(): List<List<Pos>> =
-      antennas.entries.groupBy( { it.value }, { it.key }).values.toList()
+      antennas.entries.groupBy({ it.value }, { it.key }).values.toList()
 
     fun antiNodes(antenna1: Pos, antenna2: Pos, harmonics: Boolean): Set<Pos> =
       (antenna1 - antenna2).let { gap ->
-        if (harmonics) generateSequence(antenna2) { pos -> (pos + gap).let { newPos -> if (newPos in this) newPos else null } }.toSet() +
-                       generateSequence(antenna1) { pos -> (pos - gap).let { newPos -> if (newPos in this) newPos else null } }.toSet()
-        else listOf(antenna1 + gap, antenna2 - gap).filter { pos -> pos in this }.toSet()
-      }
+        if (harmonics) generateSequence(antenna2) { pos -> (pos + gap).nullIf { it !in this } } +
+                       generateSequence(antenna1) { pos -> (pos - gap).nullIf { it !in this } }
+        else sequenceOf(antenna1 + gap, antenna2 - gap).filter { it in this }
+      }.toSet()
 
     fun findAllAntiNodes(harmonics: Boolean = false): Set<Pos> =
       findAntennasOfSameFrequencies().flatMap { antennas: List<Pos> ->
@@ -43,6 +43,8 @@ object ResonantCollinearity: Day {
 
   fun <T> List<T>.pickTwo(): List<Pair<T, T>> =
     this.flatMapIndexed { index, value -> this.indices.drop(index + 1).map { value to this[it] } }
+
+  fun <T> T.nullIf(predicate: (T) -> Boolean) = if (predicate(this)) this else null
 
   fun List<String>.parseMap(): AntennaMap =
     AntennaMap(flatMapIndexed { y, line ->
