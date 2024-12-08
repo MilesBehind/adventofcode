@@ -18,7 +18,6 @@ object ResonantCollinearity: Day {
   data class Pos(val x: Int, val y: Int) {
     operator fun plus(other: Pos):  Pos = Pos(x + other.x, y + other.y)
     operator fun minus(other: Pos): Pos = Pos(x - other.x, y - other.y)
-    infix fun antiNodes(other: Pos): Pair<Pos, Pos> = (this - other).let { gap -> (this + gap) to (other - gap) }
   }
 
   data class AntennaMap(val antennas: Map<Pos, Char>, val width: Int, val height: Int) {
@@ -26,6 +25,8 @@ object ResonantCollinearity: Day {
 
     fun findAntennasOfSameFrequencies(): List<List<Pos>> =
       antennas.keys.groupBy { pos -> antennas.values.first { antennas[pos] == it } }.values.toList()
+
+    fun antiNodes(antenna1: Pos, antenna2: Pos): Pair<Pos, Pos> = (antenna1 - antenna2).let { gap -> (antenna1 + gap) to (antenna2 - gap) }
 
     fun antiNodesInLine(antenna1: Pos, antenna2: Pos): Set<Pos> =
       (antenna1 - antenna2).let { gap ->
@@ -36,14 +37,14 @@ object ResonantCollinearity: Day {
     fun findAllAntiNodes(): Set<Pos> =
       findAntennasOfSameFrequencies().flatMap { antennas: List<Pos> ->
         antennas.pickTwo().flatMap { (antenna1, antenna2) ->
-          (antenna1 antiNodes antenna2).toList().filter { antenna -> antenna in this }
+          antiNodes(antenna1, antenna2).toList().filter { pos -> pos in this }
         }
       }.toSet()
 
     fun findAllAntiNodesInLine(): Set<Pos> =
       findAntennasOfSameFrequencies().flatMap { antennas: List<Pos> ->
         antennas.pickTwo().flatMap { (antenna1, antenna2) ->
-          antiNodesInLine(antenna1, antenna2).toList().filter { antenna -> antenna in this }
+          antiNodesInLine(antenna1, antenna2).toList().filter { pos -> pos in this }
         }
       }.toSet()
   }

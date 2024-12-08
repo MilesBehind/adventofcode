@@ -36,8 +36,9 @@ class ResonantCollinearityTest {
 
   @Test
   fun `antiNodes are computed as expected`() {
-    (Pos(4, 3) antiNodes Pos(5, 5)) shouldBe (Pos(3, 1) to Pos(6, 7))
-    (Pos(5, 5) antiNodes Pos(4, 3)) shouldBe (Pos(6, 7) to Pos(3, 1))
+    val map = input.parseMap()
+    map.antiNodes(Pos(4, 3), Pos(5, 5)) shouldBe (Pos(3, 1) to Pos(6, 7))
+    map.antiNodes(Pos(5, 5), Pos(4, 3)) shouldBe (Pos(6, 7) to Pos(3, 1))
   }
 
   @Test
