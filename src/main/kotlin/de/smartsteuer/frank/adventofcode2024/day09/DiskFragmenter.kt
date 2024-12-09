@@ -34,12 +34,10 @@ object DiskFragmenter: Day {
 
   data object Free: Block {
     override fun checkSum(position: Int): Long = 0
-    override fun toString(): String = "."
   }
 
   data class File(val id: Int): Block {
     override fun checkSum(position: Int): Long = id.toLong() * position
-    override fun toString(): String = id.toString()
   }
 
   private fun List<String>.parseDiskMapAsBlocks(): List<Block> =
@@ -76,12 +74,10 @@ object DiskFragmenter: Day {
 
   data class FileSpace(val id: Int, override val size: Int): DiskSpace {
     override fun checkSum(position: Int): Long = (0 until size).sumOf { (position + it) * id.toLong() }
-    override fun toString(): String = "$id/$size"
   }
 
   data class FreeSpace(override val size: Int): DiskSpace {
     override fun checkSum(position: Int): Long = 0
-    override fun toString(): String = size.toString()
   }
 
   private fun List<String>.parseDiskMapAsDiskSpace(): List<DiskSpace> =
