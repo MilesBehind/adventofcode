@@ -16,13 +16,13 @@ object DiskFragmenter: Day {
     input.parseDiskMapAsDiskSpace().compactByMovingFiles().checkSumOfFiles()
 
   private fun List<Block>.compactByMovingBlocks(): List<Block> {
-    tailrec fun compact(targetIndex: Int, sourceIndex: Int, result: MutableList<Block>): List<Block> {
-      if (sourceIndex == targetIndex) return result.apply { add(this@compactByMovingBlocks[targetIndex]) }
-      if (this[targetIndex] is File) return compact(targetIndex + 1, sourceIndex, result.apply { add(this@compactByMovingBlocks[targetIndex]) })
-      if (this[sourceIndex] is Free) return compact(targetIndex, sourceIndex - 1, result)
-      return compact(targetIndex + 1, sourceIndex - 1, result.apply { add(this@compactByMovingBlocks[sourceIndex]) })
+    tailrec fun compact(blocks: List<Block>, targetIndex: Int, sourceIndex: Int, result: MutableList<Block>): List<Block> {
+      if (sourceIndex == targetIndex) return result.apply { add(blocks[targetIndex]) }
+      if (this[targetIndex] is File) return compact(blocks, targetIndex + 1, sourceIndex, result.apply { add(blocks[targetIndex]) })
+      if (this[sourceIndex] is Free) return compact(blocks, targetIndex, sourceIndex - 1, result)
+      return compact(blocks, targetIndex + 1, sourceIndex - 1, result.apply { add(blocks[sourceIndex]) })
     }
-    return compact(0, this.size - 1, mutableListOf())
+    return compact(this, 0, this.size - 1, mutableListOf())
   }
 
   private fun List<Block>.checkSumOfBlocks(): Long =
@@ -50,12 +50,12 @@ object DiskFragmenter: Day {
   private fun List<DiskSpace>.compactByMovingFiles(): List<DiskSpace> {
     tailrec fun compact(sourceIndex: Int, result: MutableList<DiskSpace>): List<DiskSpace> {
       if (sourceIndex < 0) return result
-      if (result[sourceIndex] is FreeSpace) return compact(sourceIndex - 1, result)
-      val fileToMove = result[sourceIndex] as FileSpace
+      val fileToMove = result[sourceIndex]
+      if (fileToMove is FreeSpace) return compact(sourceIndex - 1, result)
       val targetIndex = result.take(sourceIndex).indexOfFirst { it is FreeSpace && it.size >= fileToMove.size }
       if (targetIndex < 0) return compact(sourceIndex - 1, result)
       return compact(sourceIndex - 1, result.apply {
-        val freeSpace = (result[targetIndex] as FreeSpace).size
+        val freeSpace = result[targetIndex].size
         set(targetIndex, fileToMove)
         set(sourceIndex, FreeSpace(fileToMove.size))
         if (fileToMove.size < freeSpace) add(targetIndex + 1, FreeSpace(freeSpace - fileToMove.size))
