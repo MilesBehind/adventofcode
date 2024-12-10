@@ -13,7 +13,7 @@ object HikingTrails: Day {
     input.parseHeightMap().findTrails().size.toLong()
 
   override fun part2(input: List<String>): Long =
-    input.parseHeightMap().findTrails(differentPathsToEndAllowed = true).size.toLong()
+    input.parseHeightMap().findTrails(multiplePathsToSameEndAllowed = true).size.toLong()
 
   data class Pos(val x: Int, val y: Int) {
     fun neighbours() = listOf(Pos(x + 1, y), Pos(x - 1, y), Pos(x, y + 1), Pos(x, y - 1))
@@ -21,7 +21,7 @@ object HikingTrails: Day {
 
   data class HeightMap(val width: Int, val height: Int, val heightMap: Map<Pos, Int>) {
 
-    fun findTrails(differentPathsToEndAllowed: Boolean = false): List<Trail> {
+    fun findTrails(multiplePathsToSameEndAllowed: Boolean = false): List<Trail> {
       val startPositions = heightMap.entries.filter { it.value == 0 }.map { it.key }
       return startPositions.flatMap { startPosition ->
         tailrec fun findTrails(start: Pos, current: List<Pos>): List<Trail> {
@@ -32,7 +32,7 @@ object HikingTrails: Day {
               heightMap[nextPos] == heightMap.getValue(pos) + 1
             }
           }
-          return findTrails(start, if (differentPathsToEndAllowed) nextPositions + ends else (nextPositions + ends).distinct())
+          return findTrails(start, if (multiplePathsToSameEndAllowed) nextPositions + ends else (nextPositions + ends).distinct())
         }
         findTrails(startPosition, listOf(startPosition))
       }
