@@ -10,30 +10,28 @@ fun main() {
 object PlutonianPebbles : Day {
 
   override fun part1(input: List<String>): Long =
-    input.parseStones().blink(25).size.toLong()
+    input.parseStones().blink(25)
 
   override fun part2(input: List<String>): Long =
-    input.parseStones().blink(75).size.toLong()
+    input.parseStones().blink(75)
 
-  fun List<Long>.blink(times: Int): List<Long> {
-    tailrec fun blink(times: Int, stones: MutableList<Long>): List<Long> {
-      println(times)
-      if (times == 0) return stones
-      stones.indices.reversed().forEach { index ->
-        val stone = stones[index]
-        val stoneDigits = stone.toString()
-        if (stone == 0L) {
-          stones[index] = 1
-        } else if (stoneDigits.length % 2 == 0) {
-          stones[index] = stoneDigits.take(stoneDigits.length / 2).toLong()
-          stones.add(index + 1, stoneDigits.takeLast(stoneDigits.length / 2).toLong())
-        } else {
-          stones[index] = stone * 2024
-        }
+  private fun List<Long>.blink(times: Int): Long =
+    this.sumOf { stone -> blink(times, stone) }
+
+  private fun blink(times: Int, stone: Long, cache: MutableMap<Pair<Long, Int>, Long> = mutableMapOf()): Long {
+    if (times == 0) return 1
+    return cache.getOrPut(stone to times) {
+      val stoneDigits = stone.toString()
+      if (stone == 0L) {
+        blink(times - 1, 1L, cache)
+      } else if (stoneDigits.length % 2 == 0) {
+        val stone1 = stoneDigits.take(stoneDigits.length / 2).toLong()
+        val stone2 = stoneDigits.takeLast(stoneDigits.length / 2).toLong()
+        blink(times - 1, stone1, cache) + blink(times - 1, stone2, cache)
+      } else {
+        blink(times - 1, stone * 2024L, cache)
       }
-      return blink(times - 1, stones)
     }
-    return blink(times, this.toMutableList())
   }
 
   private fun List<String>.parseStones() =
