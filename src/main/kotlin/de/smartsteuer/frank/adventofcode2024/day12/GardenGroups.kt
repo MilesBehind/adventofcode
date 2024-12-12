@@ -16,7 +16,8 @@ object GardenGroups : Day {
     findRegions(input).sumOf { region -> region.area() * region.sides() }.toLong()
 
   data class Pos(val x: Int, val y: Int) {
-    fun neighbours() = listOf(Pos(x - 1, y), Pos(x + 1, y), Pos(x, y + 1), Pos(x, y - 1))
+    fun neighbours()     = listOf(Pos(x - 1, y), Pos(x + 1, y), Pos(x, y + 1), Pos(x, y - 1))
+    fun edgeNeighbours() = listOf(Pos(x, y + 1), Pos(x, y - 1), Pos(x - 1, y), Pos(x + 1, y))
   }
 
   data class Region(val plant: Char, val area: MutableSet<Pos>) {
@@ -29,15 +30,13 @@ object GardenGroups : Day {
 
     fun sides(): Int {
       val positionsToEdgeFlags: Map<Pos, List<Boolean>> = area.associateWith { pos -> pos.neighbours().map { it !in area } } // left, right, top, bottom
-      val sides = positionsToEdgeFlags.mapValues { (pos, edgeFlags) ->
-        val neighbours = pos.neighbours()
-        val leftEdge   = edgeFlags[0] && positionsToEdgeFlags[neighbours[3]]?.get(0) != true
-        val rightEdge  = edgeFlags[1] && positionsToEdgeFlags[neighbours[2]]?.get(1) != true
-        val topEdge    = edgeFlags[2] && positionsToEdgeFlags[neighbours[0]]?.get(2) != true
-        val bottomEdge = edgeFlags[3] && positionsToEdgeFlags[neighbours[1]]?.get(3) != true
-        listOf(leftEdge, rightEdge, topEdge, bottomEdge)
+      val sides = positionsToEdgeFlags.entries.map { (pos, edgeFlags) ->
+        val edgeNeighbours = pos.edgeNeighbours()
+        edgeFlags.withIndex().count { (index, edgeFlag) ->
+          edgeFlag && positionsToEdgeFlags[edgeNeighbours[index]]?.get(index) != true
+        }
       }
-      return sides.values.flatten().filter { it }.size
+      return sides.sum()
     }
 
     fun hasContactTo(regionBelow: Region): Boolean =
