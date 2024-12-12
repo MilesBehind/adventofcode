@@ -16,9 +16,13 @@ object GardenGroups : Day {
     findRegions(input).sumOf { region -> region.area() * region.sides() }.toLong()
 
   data class Pos(val x: Int, val y: Int) {
-    fun neighbours()     = listOf(Pos(x - 1, y), Pos(x + 1, y), Pos(x, y + 1), Pos(x, y - 1))
-    // edge neighbours: bottom pos for left edge, top pos for right edge, left pos for bottom edge, right pos for top edge
-    fun edgeNeighbours() = listOf(Pos(x, y + 1), Pos(x, y - 1), Pos(x - 1, y), Pos(x + 1, y))
+    companion object {
+      val neighboursDelta     = listOf(Pos(-1, 0), Pos(1, 0), Pos(0, 1), Pos(0, -1))
+      val edgeNeighboursDelta = neighboursDelta.map { it.turnLeft() }
+    }
+    private fun turnLeft() = Pos(y, -x)
+    fun neighbours()     = neighboursDelta.map     { Pos(x + it.x, y + it.y) }
+    fun edgeNeighbours() = edgeNeighboursDelta.map { Pos(x + it.x, y + it.y) }
   }
 
   data class Region(val plant: Char, val area: MutableSet<Pos>) {
@@ -30,7 +34,7 @@ object GardenGroups : Day {
       area.size * 4 - area.fold(0) { sharedEdges, pos -> sharedEdges + pos.neighbours().count { it in area } }
 
     fun sides(): Int {
-      val positionsToEdgeFlags: Map<Pos, List<Boolean>> = area.associateWith { pos -> pos.neighbours().map { it !in area } } // left, right, top, bottom
+      val positionsToEdgeFlags: Map<Pos, List<Boolean>> = area.associateWith { pos -> pos.neighbours().map { it !in area } }
       val sides = positionsToEdgeFlags.entries.map { (pos, edgeFlags) ->
         val edgeNeighbours = pos.edgeNeighbours()
         edgeFlags.withIndex().count { (index, edgeFlag) ->
