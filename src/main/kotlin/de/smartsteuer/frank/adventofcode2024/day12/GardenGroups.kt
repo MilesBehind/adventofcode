@@ -17,6 +17,7 @@ object GardenGroups : Day {
 
   data class Pos(val x: Int, val y: Int) {
     fun neighbours()     = listOf(Pos(x - 1, y), Pos(x + 1, y), Pos(x, y + 1), Pos(x, y - 1))
+    // edge neighbours: bottom pos for left edge, top pos for right edge, left pos for bottom edge, right pos for top edge
     fun edgeNeighbours() = listOf(Pos(x, y + 1), Pos(x, y - 1), Pos(x - 1, y), Pos(x + 1, y))
   }
 
