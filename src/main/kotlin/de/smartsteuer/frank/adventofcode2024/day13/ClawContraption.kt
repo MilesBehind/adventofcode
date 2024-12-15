@@ -19,7 +19,9 @@ object ClawContraption : Day {
 
   data class Game(val buttonA: Movement, val buttonB: Movement, val prizePosition: Movement) {
     fun computeMinimumTokensToWin(): Long? {
-      val b = (buttonA.y * prizePosition.x - buttonA.x * prizePosition.y) / (buttonA.y * buttonB.x - buttonA.x * buttonB.y)
+      val divisor = (buttonA.y * buttonB.x - buttonA.x * buttonB.y)
+      if (divisor == 0L) return null
+      val b = (buttonA.y * prizePosition.x - buttonA.x * prizePosition.y) / divisor
       val a = (prizePosition.x - b * buttonB.x) / buttonA.x
       return if (a * buttonA.x + b * buttonB.x == prizePosition.x && a * buttonA.y + b * buttonB.y == prizePosition.y) a * 3 + b else null
     }
