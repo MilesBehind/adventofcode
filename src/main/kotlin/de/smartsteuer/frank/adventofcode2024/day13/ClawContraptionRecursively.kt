@@ -10,7 +10,7 @@ fun main() {
 }
 
 @Suppress("unused")
-object ClawContraptionRecursively : Day {
+object ClawContraptionRecursively : Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseGames().mapNotNull { game -> game.computeMinimumTokensToWin() }.sum()

@@ -7,7 +7,7 @@ fun main() {
   HikingTrails.execute(lines("/adventofcode2024/day10/height-map.txt"))
 }
 
-object HikingTrails: Day {
+object HikingTrails: Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseHeightMap().findTrails().size.toLong()

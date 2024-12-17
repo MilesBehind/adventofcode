@@ -7,7 +7,7 @@ fun main() {
   GardenGroups.execute(lines("/adventofcode2024/day12/garden-map.txt"))
 }
 
-object GardenGroups : Day {
+object GardenGroups : Day<Long> {
 
   override fun part1(input: List<String>): Long =
     findRegions(input).sumOf { region -> region.area() * region.perimeter() }.toLong()

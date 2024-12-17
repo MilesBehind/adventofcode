@@ -7,7 +7,7 @@ fun main() {
   DiskFragmenter.execute(lines("/adventofcode2024/day09/disk-map.txt"))
 }
 
-object DiskFragmenter: Day {
+object DiskFragmenter: Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseDiskMapAsBlocks().compactByMovingBlocks().checkSumOfBlocks()

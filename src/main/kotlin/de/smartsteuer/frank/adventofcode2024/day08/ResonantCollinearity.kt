@@ -7,7 +7,7 @@ fun main() {
   ResonantCollinearity.execute(lines("/adventofcode2024/day08/antenna-map.txt"))
 }
 
-object ResonantCollinearity: Day {
+object ResonantCollinearity: Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseMap().findAllAntiNodes().size.toLong()

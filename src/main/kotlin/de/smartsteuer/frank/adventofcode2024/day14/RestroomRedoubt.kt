@@ -7,7 +7,7 @@ fun main() {
   RestroomRedoubt.execute(lines("/adventofcode2024/day14/robots.txt"))
 }
 
-object RestroomRedoubt : Day {
+object RestroomRedoubt : Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseRobots().simulate(100).quadrants().fold(1) { product, robots -> product * robots.size }

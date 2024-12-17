@@ -7,7 +7,7 @@ fun main() {
   ClawContraption.execute(lines("/adventofcode2024/day13/games.txt"))
 }
 
-object ClawContraption : Day {
+object ClawContraption : Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseGames().mapNotNull { game -> game.computeMinimumTokensToWin() }.sum()

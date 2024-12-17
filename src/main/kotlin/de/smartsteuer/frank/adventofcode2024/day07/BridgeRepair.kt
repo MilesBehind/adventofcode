@@ -7,7 +7,7 @@ fun main() {
   BridgeRepair.execute(lines("/adventofcode2024/day07/calibration-equations.txt"))
 }
 
-object BridgeRepair: Day {
+object BridgeRepair: Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseEquations().filter { equation ->

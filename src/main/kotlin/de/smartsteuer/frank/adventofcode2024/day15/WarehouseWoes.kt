@@ -7,7 +7,7 @@ fun main() {
   WarehouseWoes.execute(lines("/adventofcode2024/day15/warehouse.txt"))
 }
 
-object WarehouseWoes : Day {
+object WarehouseWoes : Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseWarehouse().moveRobot().computeGpsCoordinates().sum().toLong()

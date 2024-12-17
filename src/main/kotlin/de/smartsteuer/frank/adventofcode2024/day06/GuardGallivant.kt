@@ -7,19 +7,19 @@ fun main() {
   GuardGallivant.execute(lines("/adventofcode2024/day06/map.txt"))
 }
 
-object GuardGallivant: Day {
+object GuardGallivant: Day<Int> {
 
-  override fun part1(input: List<String>): Long {
+  override fun part1(input: List<String>): Int {
     val (map, guardState) = input.parseMap()
-    return findGuardPositions(map, guardState).size.toLong()
+    return findGuardPositions(map, guardState).size
   }
 
-  override fun part2(input: List<String>): Long {
+  override fun part2(input: List<String>): Int {
     val (map, guard) = input.parseMap()
     val candidatesForNewObstacle = findGuardPositions(map, guard) - guard.pos
     return candidatesForNewObstacle.filter { candidate ->
       guardIsStuckInLoop(map.copy(obstacles = map.obstacles + (candidate to true)), guard)
-    }.size.toLong()
+    }.size
   }
 
   private fun findGuardPositions(map: GuardMap, guardState: GuardState): Set<Pos> {

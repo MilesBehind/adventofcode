@@ -7,7 +7,7 @@ fun main() {
   PlutonianPebbles.execute(lines("/adventofcode2024/day11/stones.txt"))
 }
 
-object PlutonianPebbles : Day {
+object PlutonianPebbles : Day<Long> {
 
   override fun part1(input: List<String>): Long =
     input.parseStones().blink(25)

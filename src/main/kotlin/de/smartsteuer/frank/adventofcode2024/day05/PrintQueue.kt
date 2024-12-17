@@ -7,20 +7,20 @@ fun main() {
   PrintQueue.execute(lines("/adventofcode2024/day05/page-update.txt"))
 }
 
-object PrintQueue: Day {
-  override fun part1(input: List<String>): Long =
+object PrintQueue: Day<Int> {
+  override fun part1(input: List<String>): Int =
     input.parsePageUpdates().let { pageUpdates ->
       pageUpdates.pages.filter { pages: List<Int> ->
         pageUpdates.rules.all { it.isSatisfied(pages) }
-      }.sumOf { it[it.size / 2] }.toLong()
+      }.sumOf { it[it.size / 2] }
     }
 
-  override fun part2(input: List<String>): Long =
+  override fun part2(input: List<String>): Int =
     input.parsePageUpdates().let { pageUpdates ->
       pageUpdates.pages
         .filterNot { pages: List<Int> -> pageUpdates.rules.all { it.isSatisfied(pages) } }
         .map { it.sortedWith { x, y -> if (Rule(x, y) in pageUpdates.rules) 1 else if (Rule(y, x) in pageUpdates.rules) -1 else 0 } }
-        .sumOf { it[it.size / 2] }.toLong()
+        .sumOf { it[it.size / 2] }
     }
 
   data class PageUpdates(val rules: List<Rule>, val pages: List<List<Int>>)

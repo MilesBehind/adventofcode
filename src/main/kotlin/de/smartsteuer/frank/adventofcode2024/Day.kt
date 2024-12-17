@@ -2,9 +2,9 @@ package de.smartsteuer.frank.adventofcode2024
 
 import java.time.Duration
 
-interface Day {
-  fun part1(input: List<String>): Long
-  fun part2(input: List<String>): Long
+interface Day<T> {
+  fun part1(input: List<String>): T
+  fun part2(input: List<String>): T
 
   fun execute(input: List<String>) {
     val startPart1 = System.currentTimeMillis()
