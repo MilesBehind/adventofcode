@@ -18,7 +18,7 @@ object LinenLayout: Day<Long> {
     private val lengthsToPatterns: Map<Int, Set<String>> = patterns.groupBy { it.length }.mapValues { it.value.toSet() }
     private val patternLengths = lengthsToPatterns.keys
 
-    private fun String.startPatternLengths(start: Int): Map<Int, Int> =
+    private fun String.findStartPatternLengths(start: Int): Map<Int, Int> =
       patternLengths.associateWith { length ->
         if (start + length > this.length) 0 else lengthsToPatterns.getValue(length).count { it == substring(start, start + length) }
       }.filterValues { it != 0 }
@@ -34,7 +34,7 @@ object LinenLayout: Day<Long> {
         val newSolutions = solutions + positionsToPositionCount.filter { (position, _) -> position == design.length }.values.sum()
         val newPositionsToNewPositionCount = mutableMapOf<Int, Long>()
         positionsToPositionCount.entries.forEach { (position, count) ->
-          design.startPatternLengths(position).forEach { (newPosition, newCount) ->
+          design.findStartPatternLengths(position).forEach { (newPosition, newCount) ->
             newPositionsToNewPositionCount[position + newPosition] = newPositionsToNewPositionCount.getOrDefault(position + newPosition, 0) + newCount * count
           }
         }

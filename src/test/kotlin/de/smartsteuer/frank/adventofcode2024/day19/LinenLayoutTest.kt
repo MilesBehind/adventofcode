@@ -22,10 +22,12 @@ class LinenLayoutTest {
   @Test
   fun `part 1 returns expected result`() {
     part1(input) shouldBe 6
+    LinenLayoutShorterAlternative.part1(input) shouldBe 6
   }
 
   @Test
   fun `part 2 returns expected result`() {
     part2(input) shouldBe 16
+    LinenLayoutShorterAlternative.part2(input) shouldBe 16
   }
 }
