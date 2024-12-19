@@ -26,6 +26,6 @@ class LinenLayoutTest {
 
   @Test
   fun `part 2 returns expected result`() {
-    part2(input) shouldBe 42
+    part2(input) shouldBe 16
   }
 }

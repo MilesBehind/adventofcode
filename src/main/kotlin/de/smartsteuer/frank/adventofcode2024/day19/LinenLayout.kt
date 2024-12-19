@@ -7,36 +7,40 @@ fun main() {
   LinenLayout.execute(lines("/adventofcode2024/day19/towels.txt"))
 }
 
-object LinenLayout: Day<Int> {
-  override fun part1(input: List<String>): Int =
-    input.parseTowels().countPossibleDesigns()
+object LinenLayout: Day<Long> {
+  override fun part1(input: List<String>): Long =
+    input.parseTowels().countPossibleDesigns().toLong()
 
-  override fun part2(input: List<String>): Int =
-    TODO()
+  override fun part2(input: List<String>): Long =
+    input.parseTowels().countAllPossibleDesigns()
 
   data class Towels(val patterns: List<String>, val designs: List<String>) {
     private val lengthsToPatterns: Map<Int, Set<String>> = patterns.groupBy { it.length }.mapValues { it.value.toSet() }
     private val patternLengths = lengthsToPatterns.keys
 
-    private fun String.startPatternLengths(start: Int): List<Int> =
-      patternLengths.filter { length ->
-        start + length <= this.length && lengthsToPatterns.getValue(length).contains(substring(start, start + length))
-      }
+    private fun String.startPatternLengths(start: Int): Map<Int, Int> =
+      patternLengths.associateWith { length ->
+        if (start + length > this.length) 0 else lengthsToPatterns.getValue(length).count { it == substring(start, start + length) }
+      }.filterValues { it != 0 }
 
     fun countPossibleDesigns(): Int =
-      designs.count { isPossibleDesign(it) }
+      designs.count { findDesignSolutions(it) > 0 }
 
-    private fun isPossibleDesign(design: String): Boolean {
-      //println("design: $design")
-      tailrec fun isPossibleDesign(positions: Set<Int>): Boolean {
-        //println("positions: $positions")
-        val newPositions = positions.flatMap { position ->
-          if (position == design.length) return true
-          design.startPatternLengths(position).map { it + position }
-        }.toSet()
-        return if (newPositions.isEmpty()) false else isPossibleDesign(newPositions)
+    fun countAllPossibleDesigns(): Long =
+      designs.sumOf { findDesignSolutions(it) }
+
+    private fun findDesignSolutions(design: String): Long {
+      tailrec fun findDesignSolutions(positionsToPositionCount: Map<Int, Long> = mapOf(0 to 1), solutions: Long = 0): Long {
+        val newSolutions = solutions + positionsToPositionCount.filter { (position, _) -> position == design.length }.values.sum()
+        val newPositionsToNewPositionCount = mutableMapOf<Int, Long>()
+        positionsToPositionCount.entries.forEach { (position, count) ->
+          design.startPatternLengths(position).forEach { (newPosition, newCount) ->
+            newPositionsToNewPositionCount[position + newPosition] = newPositionsToNewPositionCount.getOrDefault(position + newPosition, 0) + newCount * count
+          }
+        }
+        return if (newPositionsToNewPositionCount.isEmpty()) newSolutions else findDesignSolutions(newPositionsToNewPositionCount, newSolutions)
       }
-      return isPossibleDesign(setOf(0))
+      return findDesignSolutions()
     }
   }
 
