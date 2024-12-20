@@ -24,12 +24,12 @@ object RaceCondition: Day<Long> {
           }
         }.filter { delta -> delta.x.absoluteValue + delta.y.absoluteValue in 2..20 }
     }
+    operator fun plus (other: Pos) = Pos(x + other.x, y + other.y)
+    operator fun minus(other: Pos) = Pos(other.x - x, other.y - y)
     fun length() = x.absoluteValue + y.absoluteValue
     infix fun distanceTo(other: Pos) = (other - this).length()
     fun neighbours(): List<Pos> = listOf(Pos(x - 1, y), Pos(x, y - 1), Pos(x + 1, y), Pos(x, y + 1))
     fun circleWithRadius(radius: Int): List<Pos> = circle.filter { it.length() <= radius }.map { it + this }
-    operator fun plus (other: Pos) = Pos(x + other.x, y + other.y)
-    operator fun minus(other: Pos) = Pos(other.x - x, other.y - y)
   }
 
   data class RaceTrack(val track: Set<Pos>, val walls: Set<Pos>, val start: Pos, val end: Pos) {
