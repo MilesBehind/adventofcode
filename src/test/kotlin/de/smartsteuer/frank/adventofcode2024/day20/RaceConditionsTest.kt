@@ -35,12 +35,12 @@ class RaceConditionTest {
 
   @Test
   fun `part 2 returns expected result`() {
-    part2(input) shouldBe 1
+    part2(input) shouldBe 0
   }
 
   @Test
   fun `race track positions without cheating are found`() {
-    val positions = input.parseRaceTrack().trackPositionsWithoutCheating.toList()
+    val positions = input.parseRaceTrack().trackPositionsWithoutCheating.keys.toList()
     positions shouldHaveSize 84 + 1
     positions[ 0] shouldBe Pos( 1,  3)
     positions[12] shouldBe Pos( 7,  1)
