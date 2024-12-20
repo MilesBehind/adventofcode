@@ -34,8 +34,6 @@ object RaceCondition: Day<Long> {
 
   data class RaceTrack(val track: Set<Pos>, val walls: Set<Pos>, val start: Pos, val end: Pos) {
     internal val trackPositionsWithoutCheating = computeTrackPositionsWithoutCheating().withIndex().associate { it.value to it.index  }
-    internal val width  = walls.maxOf { it.x } + 1
-    internal val height = walls.maxOf { it.y } + 1
 
     private fun computeTrackPositionsWithoutCheating(): Set<Pos> {
       tailrec fun computeTrackPositionsWithoutCheating(pos: Pos, result: Set<Pos>): Set<Pos> {
