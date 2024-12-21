@@ -43,30 +43,20 @@ object KeypadConundrum: Day<Long> {
 
       positionsToKeys = keyMap.entries.associateBy({ it.value }) { it.key }
 
-      fun findPaths(start: Pos, end: Pos, visited: MutableSet<Pos> = mutableSetOf(), currentPath: MutableList<Pos> = mutableListOf()): List<List<Pos>> {
+      fun findShortestPaths(start: Pos, end: Pos, visited: Set<Pos> = emptySet(), path: List<Pos> = emptyList()): List<List<Pos>> {
         if (start !in positions || start in visited) return emptyList()
-        visited.add(start)
-        currentPath.add(start)
-        if (start == end) {
-          val path = currentPath.toList()
-          visited.remove(start)
-          currentPath.removeLast()
-          return listOf(path)
-        }
+        val newPath = path + start
+        if (start == end) return listOf(newPath)
+        val newVisited = visited + start
         val directions = Pos.neighbours
-        val paths = mutableListOf<List<Pos>>()
-        for (direction in directions) {
-          val nextPos = start + direction
-          paths.addAll(findPaths(nextPos, end, visited, currentPath))
-        }
-        visited.remove(start)
-        currentPath.removeLast()
+        val paths = directions.flatMap { findShortestPaths(start + it, end, newVisited, newPath) }
         val minLength = paths.minOfOrNull { it.size } ?: Int.MAX_VALUE
-        return paths.filter { it.size == minLength }      }
+        return paths.filter { it.size == minLength }
+      }
 
       val positionsToPaths: Map<Pair<Pos, Pos>, Set<List<Pos>>> = keyMap.values.flatMap { from ->
         keyMap.values.map { to ->
-          (from to to) to findPaths(from, to).toSet()
+          (from to to) to findShortestPaths(from, to).toSet()
         }
       }.toMap()
 
@@ -107,41 +97,30 @@ object KeypadConundrum: Day<Long> {
   }
 
   data class Codes(val codes: List<String>) {
-    private val robot1 = Robot('A', NumberKeypad)
-    private val robot2 = Robot('A', DirectionalKeypad)
-    private val robot3 = Robot('A', DirectionalKeypad)
 
     fun computeMovements(): Map<String, Long> {
-      tailrec fun computeMovements(robotsAndKeySequence: RobotsAndKeySequence, codes: List<String>, result: Map<String, Long>): Map<String, Long> {
+      tailrec fun computeMovements(codes: List<String>, result: Map<String, Long>): Map<String, Long> {
         if (codes.isEmpty()) return result
         val code = codes.first()
-        val nextRobotsAndKeySequences = computeMovements(robotsAndKeySequence, code)
-        val nextResult = result + (code to nextRobotsAndKeySequences.finalKeySequence.length.toLong())
-        return computeMovements(nextRobotsAndKeySequences, codes.drop(1), nextResult)
+        val keySequence = computeMovements(code)
+        val nextResult = result + (code to keySequence.length.toLong())
+        return computeMovements(codes.drop(1), nextResult)
       }
-      return computeMovements(RobotsAndKeySequence(robot1, robot2, robot3, ""),codes, emptyMap())
+      return computeMovements(codes, emptyMap())
     }
 
-    data class RobotsAndKeySequence(val robot1: Robot, val robot2: Robot, val robot3: Robot, val finalKeySequence: String)
-
-    private fun computeMovements(robotsAndKeySequence: RobotsAndKeySequence, code: String): RobotsAndKeySequence {
+    private fun computeMovements(code: String): String {
       println("code: $code")
-      val (robot1, robot2, robot3, _) = robotsAndKeySequence
-      val keySequences1: Set<String>  = robot1.computeKeys(code)
-      println("keys for robot 1: ${keySequences1.size}")
-      val keySequences2: Set<String>  = keySequences1.flatMap { sequence -> robot2.computeKeys(sequence) }.toSet()
-      val shortestLength2 = keySequences2.minOf { it.length }
-      val shortestKeySequences2 = keySequences2.filter { it.length == shortestLength2 }
-      println("keys for robot 2: ${shortestKeySequences2.size}")
-      val keySequences3: Set<String>  = shortestKeySequences2.flatMap { sequence -> robot3.computeKeys(sequence) }.toSet()
-      val shortestLength3 = keySequences3.minOf { it.length }
-      val shortestKeySequences3 = keySequences3.filter { it.length == shortestLength3 }
-      println("keys for robot 3: ${shortestKeySequences3.size}")
-      val shortestKeySequence = shortestKeySequences3.minBy { it.length }
-      return RobotsAndKeySequence(robot1.copy(pos = shortestKeySequence.last()),
-                                  robot2.copy(pos = shortestKeySequence.last()),
-                                  robot3.copy(pos = shortestKeySequence.last()),
-                                  shortestKeySequence)
+      tailrec fun computeShortestSequence(remainingRobots: Int, keySequences: Set<String>): String {
+        if (remainingRobots == 0) return keySequences.minBy { it.length }
+        val newKeySequences: Set<String> = keySequences.flatMap { sequence -> Robot('A', DirectionalKeypad).computeKeys(sequence) }.toSet()
+        val shortestLength: Int = newKeySequences.minOf { it.length }
+        val shortestKeySequences: Set<String> = newKeySequences.filter { it.length == shortestLength }.toSet()
+        println("remaining: $remainingRobots, shortestLength: $shortestLength, count: ${shortestKeySequences.size}")
+        return computeShortestSequence(remainingRobots - 1, shortestKeySequences)
+      }
+      val keySequencesAfterFirstRobot: Set<String>  = Robot('A', NumberKeypad).computeKeys(code)
+      return computeShortestSequence(2, keySequencesAfterFirstRobot)
     }
   }
 
