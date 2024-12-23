@@ -2,7 +2,6 @@ package de.smartsteuer.frank.adventofcode2024.day21
 
 import de.smartsteuer.frank.adventofcode2024.Day
 import de.smartsteuer.frank.adventofcode2024.lines
-import kotlin.io.path.fileVisitor
 
 fun main() {
   KeypadConundrum.execute(lines("/adventofcode2024/day21/codes.txt"))
@@ -114,9 +113,6 @@ object KeypadConundrum: Day<Long> {
       println("code: $code")
       tailrec fun computeShortestSequence(remainingRobots: Int, keySequences: Set<String>): String {
         if (remainingRobots == 0) return keySequences.minBy { it.length }
-
-
-
         val newKeySequences: Set<String> = keySequences.flatMap { sequence -> Robot('A', DirectionalKeypad).computeKeys(sequence) }.toSet()
         val shortestLength: Int = newKeySequences.minOf { it.length }
         val shortestKeySequences: Set<String> = newKeySequences.filter { it.length == shortestLength }.toSet()
