@@ -1,7 +1,7 @@
 package de.smartsteuer.frank.adventofcode2024.day23
 
-import de.smartsteuer.frank.adventofcode2024.day23.LanParty.NodeAndDistance.Companion.nodeAndDistance
 import de.smartsteuer.frank.adventofcode2024.day23.LanParty.computeConnections
+import de.smartsteuer.frank.adventofcode2024.day23.LanParty.findLargestConnectedSet
 import de.smartsteuer.frank.adventofcode2024.day23.LanParty.findTriples
 import de.smartsteuer.frank.adventofcode2024.day23.LanParty.parseConnections
 import de.smartsteuer.frank.adventofcode2024.day23.LanParty.part1
@@ -49,12 +49,12 @@ class LanPartyTest {
 
   @Test
   fun `part 1 returns expected result`() {
-    part1(input) shouldBe  42
+    part1(input) shouldBe "7"
   }
 
   @Test
   fun `part 2 returns expected result`() {
-    part2(input) shouldBe  42
+    part2(input) shouldBe "co,de,ka,ta"
   }
 
   @Test
@@ -63,11 +63,16 @@ class LanPartyTest {
     val connectionsToTargets = computeConnections(connections)
     connections shouldHaveSize 32
     connectionsToTargets shouldHaveSize 16
-    connectionsToTargets[nodeAndDistance("kh", 1)] shouldBe setOf("tc", "qp", "ub", "ta")
+    connectionsToTargets["kh"] shouldBe setOf("tc", "qp", "ub", "ta")
   }
 
   @Test
   fun `triples can be computed`() {
     findTriples(computeConnections(input.parseConnections())) shouldBe 7
+  }
+
+  @Test
+  fun `longest path can be found`() {
+    findLargestConnectedSet(computeConnections(input.parseConnections())) shouldBe listOf("co", "de", "ka", "ta")
   }
 }
