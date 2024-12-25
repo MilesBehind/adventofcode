@@ -46,40 +46,28 @@ object LanParty: Day<String> {
     return triples.size
   }
 
-  fun findLargestConnectedSet(connections: Map<String, Set<String>>): List<String> {
-    fun connections(name: String): Set<String> =
-      connections.getOrDefault(name, emptySet())
-
-    infix fun String.isConnectedTo(otherName: String) =
-      otherName in connections.getOrDefault(this, setOf(otherName))
-
-    var count = 0
-
-    tailrec fun findLargestConnectedSet(sequences: MutableList<MutableList<String>>, set: MutableList<String>, largestSet: List<String>): List<String> {
-      //println("findLargestConnectedSet(${sequences.dropLast(1).size}, ${sequences.last()}, $set, $largestSet)")
-      if (count++ % 100_000 == 0) println(count)
-      if (sequences.isEmpty()) return largestSet
-      val lastSequence = sequences.last()
-      if (lastSequence.isEmpty()) return findLargestConnectedSet(sequences.apply { removeLast() }, set.apply { if (set.isNotEmpty()) removeLast() }, largestSet)
-      if (sequences.size == 1) {
-        println("-------------" + sequences.last().last() + "---------------")
-      }
-      val index = lastSequence.indexOfLast { it !in set }
-      if (index < 0) return findLargestConnectedSet(sequences.apply { removeLast() }, set.apply { if (set.isNotEmpty()) removeLast() }, largestSet)
-      repeat(index) { lastSequence.removeLast() }
-      val nextName = lastSequence.removeLast()
-      //println("nextName = $nextName")
-      //if (nextName == "co") {
-      //  println("co!!!!!!!!!!!!!!!!!!")
-      //}
-      //println("$nextName is connected to ${connections(nextName)}")
-      val nextSequence = connections(nextName).filter { next -> set.all { other -> next isConnectedTo other } }
-      set += nextName
-      val newLargestSet = if (set.size > largestSet.size) set.toMutableList() else largestSet
-      //println("nextSequence: $nextSequence")
-      return findLargestConnectedSet(sequences.apply { add(nextSequence.toMutableList()) }, set, newLargestSet)
+  fun findLargestConnectedSet(connections: Map<String, Set<String>>): Set<String> {
+    fun String.connectedToAll(other: Set<String>): Boolean {
+      val connected = connections.getOrDefault(this, emptySet())
+      return other.all { it in connected }
     }
-    return findLargestConnectedSet(mutableListOf(connections.keys.toMutableList()), mutableListOf(), listOf()).sorted()
+
+    fun findNextConnectedSets(sets: Set<Set<String>>): Set<Set<String>> =
+      sets.first().size.let { length ->
+        sets.flatMapTo(mutableSetOf()) { set: Set<String> ->
+          val names: List<String> = connections.keys.filter { name: String -> name !in set && name.connectedToAll(set) }
+          names.flatMap { name -> connections.getOrDefault(name, emptySet()).map { set + it } }
+        }.filter { it.size == length + 1 }.toSet()
+      }
+
+    val length2: Set<Set<String>> = connections.keys.flatMapTo(mutableSetOf()) { start -> connections.getOrDefault(start, emptySet()).map { setOf(start, it) } }
+    val length3: Set<Set<String>> = findNextConnectedSets(length2)
+    val length4: Set<Set<String>> = findNextConnectedSets(length3)
+
+    println("length2: ${length2.size}")
+    println("length3: ${length3.size}")
+    println("length4: ${length4.size}")
+    return length4.first()
   }
 
   fun List<String>.parseConnections(): List<Pair<String, String>> =
