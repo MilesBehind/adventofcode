@@ -1,12 +1,15 @@
 package de.smartsteuer.frank.adventofcode2024.day24
 
+import de.smartsteuer.frank.adventofcode2024.day24.CrossedWires.Expression
 import de.smartsteuer.frank.adventofcode2024.day24.CrossedWires.parseDevice
 import de.smartsteuer.frank.adventofcode2024.day24.CrossedWires.part1
 import de.smartsteuer.frank.adventofcode2024.day24.CrossedWires.part2
 import de.smartsteuer.frank.adventofcode2024.lines
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
+import io.kotest.matchers.maps.shouldHaveSize
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
+import kotlin.math.exp
 
 class CrossedWiresTest {
   private val input1 = listOf(
@@ -148,6 +151,15 @@ class CrossedWiresTest {
   @Test
   fun `flipped z-bits can be computed`() {
     val device = lines("/adventofcode2024/day24/input-and-gates.txt").parseDevice()
-    device.computeFlippedBits() shouldBe mapOf("z12" to 1, "z13" to 1, "z14" to 1, "z15" to 0, "z29" to 0, "z30" to 1, "z33" to 0, "z34" to 0, "z35" to 0, "z36" to 1)
+    val (flippedBits: Map<String, Int>, nonFlippedBits: Map<String, Int>) = device.computeFlippedBitsAndNonFlippedBits()
+    flippedBits shouldBe mapOf("z12" to 1, "z13" to 1, "z14" to 1, "z15" to 0, "z29" to 0, "z30" to 1, "z33" to 0, "z34" to 0, "z35" to 0, "z36" to 1)
+    nonFlippedBits shouldHaveSize device.findVariableNames('z').size - flippedBits.size
+  }
+
+  @Test
+  fun `expressions for flipped outputs can be found`() {
+    val device = lines("/adventofcode2024/day24/input-and-gates.txt").parseDevice()
+    val (flippedBits, nonFlippedBits) = device.computeFlippedBitsAndNonFlippedBits()
+    val expressions: List<Expression> = device.findExpressionsForFlippedBits(flippedBits).toList()
   }
 }

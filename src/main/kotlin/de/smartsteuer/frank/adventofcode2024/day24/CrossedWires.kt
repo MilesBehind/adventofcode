@@ -61,15 +61,30 @@ object CrossedWires: Day<Long> {
       return computeBits(number, 0, mutableMapOf())
     }
 
-    fun computeFlippedBits(): Map<String, Int> {
-      val expectedZBits = computeBits(computeExpectedResult(), 'z')
-      val computedZBits = findVariableNames('z').associateWith { compute(it) }
-      return expectedZBits.entries.fold(mutableMapOf()) { result, (name, value) ->
+    fun computeFlippedBitsAndNonFlippedBits(): Pair<Map<String, Int>, Map<String, Int>> {
+      val expectedZBits: Map<String, Int> = computeBits(computeExpectedResult(), 'z')
+      val computedZBits: Map<String, Int> = findVariableNames('z').associateWith { compute(it) }
+      val flippedBits = expectedZBits.entries.fold(mutableMapOf<String, Int>()) { result, (name, value) ->
         result.also {
           if (value != computedZBits[name]) {
             result[name] = computedZBits.getValue(name)
           }
         }
+      }
+      val nonFlippedBits = expectedZBits - flippedBits.keys
+      return Pair(flippedBits, nonFlippedBits)
+    }
+
+    private fun findExpressions(output: String): List<Expression> {
+      val expression = expressions[output] ?: return emptyList()
+      return (findExpressions(expression.operand1) + findExpressions(expression.operand2) + expression)
+    }
+
+    fun findExpressionsForFlippedBits(flippedBits: Map<String, Int>): Set<Expression> {
+      val expressionsForFlippedBits: Map<String, List<Expression>> = flippedBits.keys.associateWith { output -> findExpressions(output) }
+      val expressionSets: List<Set<Expression>> = expressionsForFlippedBits.values.map { it.toSet() }
+      return expressionSets.fold(mutableSetOf()) { combined, expressions ->
+        combined.apply { addAll(expressions) }
       }
     }
 
