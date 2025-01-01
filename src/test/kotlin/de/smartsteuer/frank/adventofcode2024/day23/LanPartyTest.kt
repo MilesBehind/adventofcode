@@ -73,6 +73,8 @@ class LanPartyTest {
 
   @Test
   fun `longest path can be found`() {
-    findLargestConnectedSet(computeConnections(input.parseConnections())) shouldBe listOf("co", "de", "ka", "ta")
+    val pairs = input.parseConnections()
+    val connections = computeConnections(pairs)
+    findLargestConnectedSet(connections) shouldBe listOf("co", "de", "ka", "ta")
   }
 }

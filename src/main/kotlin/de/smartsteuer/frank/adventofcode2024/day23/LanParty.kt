@@ -47,27 +47,26 @@ object LanParty: Day<String> {
   }
 
   fun findLargestConnectedSet(connections: Map<String, Set<String>>): Set<String> {
-    fun String.connectedToAll(other: Set<String>): Boolean {
-      val connected = connections.getOrDefault(this, emptySet())
-      return other.all { it in connected }
-    }
+    fun String.connectedToAll(other: Set<String>): Boolean =
+      connections.getOrDefault(this, emptySet()).let { connected -> return other.all { it in connected } }
 
     fun findNextConnectedSets(sets: Set<Set<String>>): Set<Set<String>> =
-      sets.first().size.let { length ->
-        sets.flatMapTo(mutableSetOf()) { set: Set<String> ->
-          val names: List<String> = connections.keys.filter { name: String -> name !in set && name.connectedToAll(set) }
-          names.flatMap { name -> connections.getOrDefault(name, emptySet()).map { set + it } }
-        }.filter { it.size == length + 1 }.toSet()
+      sets.flatMapTo(mutableSetOf()) { set ->
+        connections.keys.filter { name: String ->
+          name !in set && name.connectedToAll(set)
+        }.map { candidate -> set + candidate }
       }
 
-    val length2: Set<Set<String>> = connections.keys.flatMapTo(mutableSetOf()) { start -> connections.getOrDefault(start, emptySet()).map { setOf(start, it) } }
-    val length3: Set<Set<String>> = findNextConnectedSets(length2)
-    val length4: Set<Set<String>> = findNextConnectedSets(length3)
+    tailrec fun findLargestConnectedSet(sets: Set<Set<String>>): Set<String> =
+      if (sets.size == 1) sets.first().sorted().toSet()
+      else findLargestConnectedSet(findNextConnectedSets(sets))
 
-    println("length2: ${length2.size}")
-    println("length3: ${length3.size}")
-    println("length4: ${length4.size}")
-    return length4.first()
+    val start: Set<Set<String>> =
+      connections.keys
+        .flatMapTo(mutableSetOf()) { start ->
+          connections.getOrDefault(start, emptySet()).map { setOf(start, it) }
+        }
+    return findLargestConnectedSet(start)
   }
 
   fun List<String>.parseConnections(): List<Pair<String, String>> =
