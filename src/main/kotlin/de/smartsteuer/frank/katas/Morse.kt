@@ -86,7 +86,7 @@ interface MorseCodeTransformer {
   /**
    * Parses a morse-string to a human-readable normal text. For example, the
    * morse code `"···· · ·–·· ·–·· –––    ·–– ––– ·–· ·–·· –·· –·–·–– "` is
-   * parsed to the message `"Hello World!"`.
+   * parsed to the message `"HELLO WORLD!"`.
    * @param encodedMessage input morse code
    * @return resulting message««
    */
@@ -112,7 +112,7 @@ interface RegularMorseSignalTransformer {
    *
    * For example, the message
    * `"Hello World!"` is formatted to the signal
-   * `00000000`.
+   * `1010101000100010111010100010111010100011101110111000000010111011100011101110111000101110100010111010100011101010001110101110101110111`.
    * @param message input message
    * @return resulting morse signal
    */
@@ -121,8 +121,8 @@ interface RegularMorseSignalTransformer {
   /**
    * Parses a morse-signal ('0' nd '1' for 'off' and 'on') to a human-readable
    * normal text. For example, the
-   * morse code `000000` is
-   * parsed to the message `"Hello World!"`.
+   * morse code `1010101000100010111010100010111010100011101110111000000010111011100011101110111000101110100010111010100011101010001110101110101110111` is
+   * parsed to the message `"HELLO WORLD!"`.
    * @param signal input morse signal
    * @return resulting message
    */
@@ -185,40 +185,29 @@ object SimpleRegularMorseSignalTransformer: RegularMorseSignalTransformer {
     }
 
   override fun parse(signal: String): String =
-    signal.fold(ParseState()) { state, bit -> transition(state, bit) }.let { it.message + codeToChar[it.code.dropLast(1)] }
-
-  private data class ParseState(val offCount: Int = 0, val onCount: Int = 0, val code: String = "", val message: String = "") {
-    override fun toString(): String = "off: $offCount, on: $onCount, code: $code, message: $message"
-  }
-
-  private fun transition(state: ParseState, bit: Char): ParseState =
-    when {
-      bit == '1' && state.offCount == CHARACTER_PAUSE_LENGTH      -> state.copy(onCount = 1, offCount = 0, code = "", message = state.message + codeToChar[state.code.dropLast(1)])
-      bit == '1' && state.offCount == WORD_PAUSE_LENGTH           -> state.copy(onCount = 1, offCount = 0, code = "", message = state.message + codeToChar[state.code.dropLast(1)] + " ")
-      bit == '1' && state.onCount in (0 until LONG_LENGTH)        -> state.copy(onCount = state.onCount + 1)
-      bit == '0' && state.onCount == 1                            -> state.copy(onCount = 0, offCount = 1, code = state.code + dot)
-      bit == '0' && state.onCount == 3                            -> state.copy(onCount = 0, offCount = 1, code = state.code + dash)
-      bit == '0' && state.offCount in (0 until WORD_PAUSE_LENGTH) -> state.copy(offCount = state.offCount + 1)
-      else                                                        -> throw IllegalStateException("invalid morse signal. onCount = ${state.onCount}, offCount = ${state.offCount}, code = ${state.code}, ${state.message}: bit = $bit")
-    }.also { println("bit = $bit -> next state: $it") }
+    signal.split(wordPause).joinToString(separator = " ") { word ->
+      word.split(characterPause).mapNotNull { code -> codeToChar[code] }.joinToString(separator = "")
+    }
 }
 
 
 
 fun main() {
   formatAndParse("abc")
-  //formatAndParse("Hello World!")
-  //formatAndParse("Steuererklärungen macht man mit smartsteuer!")
+  formatAndParse("Hello World!")
+  formatAndParse("Steuererklärungen macht man mit smartsteuer!")
 }
 
 private fun formatAndParse(message: String) {
+  println("======================")
   println(message)
-  //val encoded = SimpleMorseCodeTransformer.format(message)
-  //println(encoded)
+  val encoded = SimpleMorseCodeTransformer.format(message)
+  println(encoded)
+  val decoded = SimpleMorseCodeTransformer.parse(encoded)
+  println(decoded)
+
   val signal = SimpleRegularMorseSignalTransformer.format(message)
   println(signal)
   val decodedSignal = SimpleRegularMorseSignalTransformer.parse(signal)
   println(decodedSignal)
-  //val decoded = SimpleMorseCodeTransformer.parse(encoded)
-  //println(decoded)
 }
