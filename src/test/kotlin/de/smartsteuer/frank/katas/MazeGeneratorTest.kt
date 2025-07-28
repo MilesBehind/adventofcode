@@ -10,7 +10,7 @@ class MazeGeneratorTest {
 
   private val width  = 10
   private val height = 10
-  private val maze   = SimpleMazeGenerator.generate(width, height)
+  private val maze   = generateMaze(width, height)
 
   @Test
   fun `check that all cells are present`() {
