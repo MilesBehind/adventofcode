@@ -9,72 +9,68 @@ interface MazeGenerator {
     fun neighbours() = listOf(Pos(x - 1, y), Pos(x + 1, y), Pos(x, y - 1), Pos(x, y + 1))
   }
   data class Maze(val cells: Map<Pos, List<Pos>>, val start: Pos, val end: Pos)
-  fun generate(width: Int, height: Int): Maze
 }
 
 
 
-object SimpleMazeGenerator: MazeGenerator {
+fun generateMaze(width: Int, height: Int): Maze {
+  require(width > 0 && height > 0) { "Width and height must be > 0" }
 
-  override fun generate(width: Int, height: Int): Maze {
-    require(width > 0 && height > 0) { "Width and height must be > 0" }
-
-    val grid: MutableMap<Pos, MutableList<Pos>> = mutableMapOf()
-    val visited: MutableMap<Pos, Boolean> = mutableMapOf()
-    (0 until height).forEach { y ->
-      (0 until width).forEach { x ->
-        grid[Pos(x, y)] = mutableListOf()
-        visited[Pos(x, y)] = false
-      }
+  val grid: MutableMap<Pos, MutableList<Pos>> = mutableMapOf()
+  val visited: MutableMap<Pos, Boolean> = mutableMapOf()
+  (0 until height).forEach { y ->
+    (0 until width).forEach { x ->
+      grid[Pos(x, y)] = mutableListOf()
+      visited[Pos(x, y)] = false
     }
-
-    fun dfs(pos: Pos) {
-      visited[pos] = true
-      val neighbours = pos.neighbours().filter { neighbour ->
-        neighbour.x in (0 until width) &&
-        neighbour.y in (0 until height) &&
-        grid.getValue(neighbour).isEmpty()
-      }.shuffled()
-      for (neighbour in neighbours) {
-        if (visited[neighbour] == false) {
-          val current = grid.getValue(pos)
-          val neighbours = grid.getValue(neighbour)
-          current.add(neighbour)
-          neighbours.add(pos)
-          dfs(neighbour)
-        }
-      }
-    }
-
-    dfs(Pos(0, 0))
-
-    val vertical = Random.nextBoolean()
-    val (start, end) = if (vertical) {
-      val startX = Random.nextInt(width)
-      val endX = Random.nextInt(width)
-
-      val startPos = Pos(startX, -1)
-      val endPos = Pos(endX, height)
-
-      grid.getValue(Pos(startX, 0)).add(startPos)
-      grid.getValue(Pos(endX, height - 1)).add(endPos)
-
-      (startPos to listOf(Pos(startX, 0))) to (endPos to listOf(Pos(endX, height - 1)))
-    } else {
-      val startY = Random.nextInt(height)
-      val endY = Random.nextInt(height)
-
-      val startPos = Pos(-1, startY)
-      val endPos = Pos(width, endY)
-
-      grid.getValue(Pos(0, startY)).add(startPos)
-      grid.getValue(Pos(width - 1, endY)).add(endPos)
-
-      (startPos to listOf(Pos(0, startY))) to (endPos to listOf(Pos(width - 1, endY)))
-    }
-
-    return Maze(grid + start + end, start.first, end.first)
   }
+
+  fun dfs(pos: Pos) {
+    visited[pos] = true
+    val neighbours = pos.neighbours().filter { neighbour ->
+      neighbour.x in (0 until width) &&
+      neighbour.y in (0 until height) &&
+      grid.getValue(neighbour).isEmpty()
+    }.shuffled()
+    for (neighbour in neighbours) {
+      if (visited[neighbour] == false) {
+        val current = grid.getValue(pos)
+        val neighbours = grid.getValue(neighbour)
+        current.add(neighbour)
+        neighbours.add(pos)
+        dfs(neighbour)
+      }
+    }
+  }
+
+  dfs(Pos(0, 0))
+
+  val vertical = Random.nextBoolean()
+  val (start, end) = if (vertical) {
+    val startX = Random.nextInt(width)
+    val endX = Random.nextInt(width)
+
+    val startPos = Pos(startX, -1)
+    val endPos = Pos(endX, height)
+
+    grid.getValue(Pos(startX, 0)).add(startPos)
+    grid.getValue(Pos(endX, height - 1)).add(endPos)
+
+    (startPos to listOf(Pos(startX, 0))) to (endPos to listOf(Pos(endX, height - 1)))
+  } else {
+    val startY = Random.nextInt(height)
+    val endY = Random.nextInt(height)
+
+    val startPos = Pos(-1, startY)
+    val endPos = Pos(width, endY)
+
+    grid.getValue(Pos(0, startY)).add(startPos)
+    grid.getValue(Pos(width - 1, endY)).add(endPos)
+
+    (startPos to listOf(Pos(0, startY))) to (endPos to listOf(Pos(width - 1, endY)))
+  }
+
+  return Maze(grid + start + end, start.first, end.first)
 }
 
 /**
@@ -87,24 +83,10 @@ fun Maze.render(): String {
   val mazeCells = cells.filterKeys { it !== start && it !== end }
   val width     = mazeCells.keys.maxOf { it.x } + 1
   val height    = mazeCells.keys.maxOf { it.y } + 1
-  val symbols   = mapOf(
-    LineSpec(left = false, right = false, top = false, bottom = false) to "  ",
-    LineSpec(left = false, right = false, top = false, bottom = true ) to "╷ ",
-    LineSpec(left = false, right = false, top = true,  bottom = false) to "╵ ",
-    LineSpec(left = false, right = false, top = true,  bottom = true ) to "│ ",
-    LineSpec(left = false, right = true,  top = false, bottom = false) to "╶─",
-    LineSpec(left = false, right = true,  top = false, bottom = true ) to "┌─",
-    LineSpec(left = false, right = true,  top = true,  bottom = false) to "└─",
-    LineSpec(left = false, right = true,  top = true,  bottom = true ) to "├─",
-    LineSpec(left = true,  right = false, top = false, bottom = false) to "╴ ",
-    LineSpec(left = true,  right = false, top = false, bottom = true ) to "┐ ",
-    LineSpec(left = true,  right = false, top = true,  bottom = false) to "┘ ",
-    LineSpec(left = true,  right = false, top = true,  bottom = true ) to "┤ ",
-    LineSpec(left = true,  right = true,  top = false, bottom = false) to "──",
-    LineSpec(left = true,  right = true,  top = false, bottom = true ) to "┬─",
-    LineSpec(left = true,  right = true,  top = true,  bottom = false) to "┴─",
-    LineSpec(left = true,  right = true,  top = true,  bottom = true ) to "┼─"
-  )
+  val symbols = listOf("  ", "╷ ", "╵ ", "│ ", "╶─", "┌─", "└─", "├─", "╴ ", "┐ ", "┘ ", "┤ ", "──", "┬─", "┴─", "┼─").withIndex()
+    .associate { (index, value) ->
+      LineSpec(index and 0b1000 != 0, index and 0b0100 != 0, index and 0b0010 != 0, index and 0b0001 != 0) to value
+    }
 
   fun renderCell(x: Int, y: Int): String {
     val pos                 = Pos(x, y)
@@ -138,28 +120,33 @@ fun Maze.renderBlocks(): String =
     val mazeCells = cells.filterKeys { it !== start && it !== end }
     val maxX      = mazeCells.keys.maxOf { it.x } + 1
     val maxY      = mazeCells.keys.maxOf { it.y } + 1
+    val block     = "██"
+    val space     = "  "
     (0..maxY).forEach { y ->
       (0..maxX).forEach { x ->
         val connections    = cells[Pos(x, y)] ?: emptyList()
         val connectedToTop = connections.any { it.y == y - 1 } || (x == maxX)
-        append("██")
-        append(if (connectedToTop) "  " else "██")
+        append(block).append(if (connectedToTop) space else block)
       }
       appendLine()
       (0..maxX).forEach { x ->
         val connections     = cells[Pos(x, y)] ?: emptyList()
         val connectedToLeft = connections.any { it.x == x - 1 } || (y == maxY)
-        append(if (connectedToLeft) "  " else "██")
-        append("  ")
+        append(if (connectedToLeft) space else block).append(space)
       }
       appendLine()
     }
   }
 
+fun parseMaze(rendered: String): Maze {
+  TODO()
+}
+
 
 fun main() {
+  val maze = generateMaze(10, 10)
+  //val maze = SimpleMazeGenerator.generate(55, 25)
   //val maze = SimpleMazeGenerator.generate(110, 50)
-  val maze = SimpleMazeGenerator.generate(10, 10)
   println(maze.render())
   println()
   println(maze.renderBlocks())
