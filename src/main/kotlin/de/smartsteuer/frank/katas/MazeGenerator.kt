@@ -1,76 +1,63 @@
 package de.smartsteuer.frank.katas
 
-import de.smartsteuer.frank.katas.MazeGenerator.Maze
-import de.smartsteuer.frank.katas.MazeGenerator.Pos
+import java.time.Duration
 import kotlin.random.Random
 
-interface MazeGenerator {
-  data class Pos(val x: Int, val y: Int) {
-    fun neighbours() = listOf(Pos(x - 1, y), Pos(x + 1, y), Pos(x, y - 1), Pos(x, y + 1))
-  }
-  data class Maze(val cells: Map<Pos, List<Pos>>, val start: Pos, val end: Pos)
+data class Pos(val x: Int, val y: Int) {
+  fun neighbours() = listOf(Pos(x - 1, y), Pos(x + 1, y), Pos(x, y - 1), Pos(x, y + 1))
 }
-
+data class Maze(val cells: Map<Pos, List<Pos>>, val start: Pos, val end: Pos)
 
 
 fun generateMaze(width: Int, height: Int): Maze {
-  require(width > 0 && height > 0) { "Width and height must be > 0" }
+  require(width > 0 && height > 0) { "Width and height must be positive" }
+  val connections = mutableMapOf<Pos, MutableList<Pos>>()
+  for (x in 0 until width) for (y in 0 until height) connections[Pos(x, y)] = mutableListOf()
+  val visited = mutableSetOf<Pos>()
+  val startInner = Pos(0, 0)
+  visited += startInner
 
-  val grid: MutableMap<Pos, MutableList<Pos>> = mutableMapOf()
-  val visited: MutableMap<Pos, Boolean> = mutableMapOf()
-  (0 until height).forEach { y ->
-    (0 until width).forEach { x ->
-      grid[Pos(x, y)] = mutableListOf()
-      visited[Pos(x, y)] = false
+  tailrec fun carve(stack: List<Pos>) {
+    if (stack.isEmpty()) return
+    val current = stack.first()
+    val unvisited = current.neighbours().filter { it.x in 0 until width && it.y in 0 until height && it !in visited }
+    if (unvisited.isNotEmpty()) {
+      val next = unvisited.random()
+      connections[current]!!.add(next)
+      connections[next]!!.add(current)
+      visited += next
+      carve(listOf(next) + stack)
+    } else {
+      carve(stack.drop(1))
     }
   }
 
-  fun dfs(pos: Pos) {
-    visited[pos] = true
-    val neighbours = pos.neighbours().filter { neighbour ->
-      neighbour.x in (0 until width) &&
-      neighbour.y in (0 until height) &&
-      grid.getValue(neighbour).isEmpty()
-    }.shuffled()
-    for (neighbour in neighbours) {
-      if (visited[neighbour] == false) {
-        val current = grid.getValue(pos)
-        val neighbours = grid.getValue(neighbour)
-        current.add(neighbour)
-        neighbours.add(pos)
-        dfs(neighbour)
-      }
+  carve(listOf(startInner))
+  val horizontal = Random.nextBoolean()
+  val start: Pos
+  val end: Pos
+  if (horizontal) {
+    val y = Random.nextInt(height)
+    start = Pos(-1, y).also {
+      connections.getOrPut(it) { mutableListOf() }.add(Pos(0, y))
+      connections[Pos(0, y)]!!.add(it)
     }
-  }
-
-  dfs(Pos(0, 0))
-
-  val vertical = Random.nextBoolean()
-  val (start, end) = if (vertical) {
-    val startX = Random.nextInt(width)
-    val endX = Random.nextInt(width)
-
-    val startPos = Pos(startX, -1)
-    val endPos = Pos(endX, height)
-
-    grid.getValue(Pos(startX, 0)).add(startPos)
-    grid.getValue(Pos(endX, height - 1)).add(endPos)
-
-    (startPos to listOf(Pos(startX, 0))) to (endPos to listOf(Pos(endX, height - 1)))
+    end = Pos(width, y).also {
+      connections.getOrPut(it) { mutableListOf() }.add(Pos(width - 1, y))
+      connections[Pos(width - 1, y)]!!.add(it)
+    }
   } else {
-    val startY = Random.nextInt(height)
-    val endY = Random.nextInt(height)
-
-    val startPos = Pos(-1, startY)
-    val endPos = Pos(width, endY)
-
-    grid.getValue(Pos(0, startY)).add(startPos)
-    grid.getValue(Pos(width - 1, endY)).add(endPos)
-
-    (startPos to listOf(Pos(0, startY))) to (endPos to listOf(Pos(width - 1, endY)))
+    val x = Random.nextInt(width)
+    start = Pos(x, -1).also {
+      connections.getOrPut(it) { mutableListOf() }.add(Pos(x, 0))
+      connections[Pos(x, 0)]!!.add(it)
+    }
+    end = Pos(x, height).also {
+      connections.getOrPut(it) { mutableListOf() }.add(Pos(x, height - 1))
+      connections[Pos(x, height - 1)]!!.add(it)
+    }
   }
-
-  return Maze(grid + start + end, start.first, end.first)
+  return Maze(cells = connections, start = start, end = end)
 }
 
 /**
@@ -112,7 +99,7 @@ fun Maze.render(): String {
       }
       appendLine()
     }
-  }
+  }.split("\n").joinToString(separator = "\n") { it.trim() }
 }
 
 fun Maze.renderBlocks(): String =
@@ -136,30 +123,72 @@ fun Maze.renderBlocks(): String =
       }
       appendLine()
     }
-  }
+  }.split("\n").dropLast(2).joinToString(separator = "\n") { it.dropLast(2) }
+
 
 fun parseMaze(rendered: String): Maze {
-  TODO()
+  val lines  = rendered.lines().map { line -> line.filterIndexed { index, _ -> index % 2 == 0 }  }
+  val width  = (lines.first().length - 1) / 2
+  val height = (lines.size - 1) / 2
+  val reachablePositions: Set<Pos> = lines.flatMapIndexed { y: Int, line: String ->
+    line.mapIndexedNotNull { x, char ->
+      if (char == ' ') Pos(x, y) else null
+    }
+  }.toSet()
+  val deltas = listOf(Pos(0, -1), Pos(1, 0), Pos(0, 1), Pos(-1, 0))
+  infix operator fun Pos.plus(other: Pos) = Pos(x + other.x, y + other.y)
+  val cells = mutableMapOf<Pos, List<Pos>>()
+  (0 until height).forEach { y ->
+    (0 until width).forEach { x ->
+      val pos = Pos(x * 2 + 1, y * 2 + 1)
+      val reachableNeighbours = deltas.withIndex().filter { (_, delta) -> (pos + delta) in reachablePositions }.map { (index, _) -> Pos(x, y) + deltas[index] }
+      cells[Pos(x, y)] = reachableNeighbours
+    }
+  }
+  val targets = cells.values.flatten()
+  val start = targets.firstOrNull { it.y == -1     } ?: targets.first { it.x == -1 }
+  val end   = targets.firstOrNull { it.y == height } ?: targets.first { it.x == width }
+  return Maze(cells + (start to listOf(cells.entries.first { (_, value) -> start in value }.key)) +
+                      (end   to listOf(cells.entries.first { (_, value) -> end   in value }.key)), start, end)
 }
 
 
 fun main() {
-  val maze = generateMaze(10, 10)
-  //val maze = SimpleMazeGenerator.generate(55, 25)
-  //val maze = SimpleMazeGenerator.generate(110, 50)
-  println(maze.render())
-  println()
-  println(maze.renderBlocks())
+  val sizes = listOf(10, 20, 100, 200)
+  sizes.forEach { size ->
+    println("--------- size = $size ---------")
+    val generateStart = System.nanoTime()
+    val maze = generateMaze(size, size)
+    val generationDuration = Duration.ofNanos(System.nanoTime() - generateStart)
+    println("Generated maze in $generationDuration")
+
+    val renderBlocksStart = System.nanoTime()
+    val blocks = maze.renderBlocks()
+    val renderBlocksDuration = Duration.ofNanos(System.nanoTime() - renderBlocksStart)
+    println("Renderer blocks in $renderBlocksDuration")
+
+    val parseStart = System.nanoTime()
+    val parsedMaze = parseMaze(blocks)
+    val parseDuration = Duration.ofNanos(System.nanoTime() - parseStart)
+    println("Parsed maze in $parseDuration")
+
+    val renderStart = System.nanoTime()
+    val rendered = parsedMaze.render()
+    //println(rendered)
+    val renderDuration = Duration.ofNanos(System.nanoTime() - renderStart)
+    println("Rendered maze in $renderDuration")
+    println()
+  }
 
   /*
   for (y in 0..9) {
     for (x in 0..9) {
-      print(maze.cells[Pos(x, y)]?.let { "$x/$y -> ${it.map { c -> "${c.x}/${c.y}" } } ".padEnd(24)})
+      print(parsedMaze.cells[Pos(x, y)]?.let { "$x/$y -> ${it.map { c -> "${c.x}/${c.y}" } } ".padEnd(24)})
     }
     println()
   }
-  println("Start: ${maze.start} -> ${maze.cells[maze.start]}")
-  println("End:   ${maze.end} -> ${maze.cells[maze.end]}")
+  println("Start: ${parsedMaze.start} -> ${parsedMaze.cells[parsedMaze.start]}")
+  println("End:   ${parsedMaze.end} -> ${parsedMaze.cells[parsedMaze.end]}")
   */
 }
 

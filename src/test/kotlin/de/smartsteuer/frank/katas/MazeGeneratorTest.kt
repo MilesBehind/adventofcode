@@ -1,6 +1,5 @@
 package de.smartsteuer.frank.katas
 
-import de.smartsteuer.frank.katas.MazeGenerator.Pos
 import io.kotest.assertions.withClue
 import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
