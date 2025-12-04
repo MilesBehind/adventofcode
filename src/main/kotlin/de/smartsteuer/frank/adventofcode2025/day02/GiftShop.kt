@@ -1,6 +1,6 @@
 package de.smartsteuer.frank.adventofcode2025.day02
 
-import de.smartsteuer.frank.adventofcode2024.Day
+import de.smartsteuer.frank.adventofcode2025.Day
 import de.smartsteuer.frank.adventofcode2025.lines
 
 fun main() {
