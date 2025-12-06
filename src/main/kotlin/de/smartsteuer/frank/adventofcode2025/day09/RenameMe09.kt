@@ -1,13 +1,13 @@
-package de.smartsteuer.frank.adventofcode2025.day06
+package de.smartsteuer.frank.adventofcode2025.day09
 
 import de.smartsteuer.frank.adventofcode2025.Day
 import de.smartsteuer.frank.adventofcode2025.lines
 
 fun main() {
-  RenameMe05.execute(lines("/adventofcode2025/day03/batteries.txt"))
+  RenameMe09.execute(lines("/adventofcode2025/day09/input.txt"))
 }
 
-object RenameMe05: Day<Long> {
+object RenameMe09: Day<Long> {
   override fun part1(input: List<String>): Long =
     0
 
