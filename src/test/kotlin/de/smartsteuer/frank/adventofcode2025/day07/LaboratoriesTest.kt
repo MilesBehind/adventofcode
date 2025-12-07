@@ -1,6 +1,5 @@
 package de.smartsteuer.frank.adventofcode2025.day07
 
-import de.smartsteuer.frank.adventofcode2025.day07.Coordinate.Companion.c
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -35,15 +34,15 @@ class LaboratoriesTest {
   }
 
   @Test
-  fun `splitters can be parsed`() {
-    input.parseSplitters() shouldBe Splitters(c(7, 0), setOf(
-      c(7, 2),
-      c(6, 4), c(8, 4),
-      c(5, 6), c(7, 6), c(9, 6),
-      c(4, 8), c(6, 8), c(10, 8),
-      c(3, 10), c(5, 10), c(9, 10), c(11, 10),
-      c(2, 12), c(6, 12), c(12, 12),
-      c(1, 14), c(3, 14), c(5, 14), c(7, 14), c(9, 14), c(13, 14),
-    ), 15, 16)
+  fun `splitters2 can be parsed`() {
+    input.parseSplitters() shouldBe Splitters(7, listOf(
+      setOf(7),
+      setOf(6, 8),
+      setOf(5, 7, 9),
+      setOf(4, 6, 10),
+      setOf(3, 5, 9,11),
+      setOf(2, 6, 12),
+      setOf(1, 3, 5, 7, 9, 13)
+    ))
   }
 }
