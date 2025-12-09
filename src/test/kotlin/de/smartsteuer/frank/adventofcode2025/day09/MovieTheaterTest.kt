@@ -3,27 +3,25 @@ package de.smartsteuer.frank.adventofcode2025.day09
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-class RenameMe09Test {
+class MovieTheaterTest {
   private val input = listOf(
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
+    "7,1",
+    "11,1",
+    "11,7",
+    "9,7",
+    "9,5",
+    "2,5",
+    "2,3",
+    "7,3",
   )
 
   @Test
   fun `part 1 returns expected result`() {
-    RenameMe09.part1(input) shouldBe 0
+    MovieTheater.part1(input) shouldBe 50
   }
 
   @Test
   fun `part 2 returns expected result`() {
-    RenameMe09.part2(input) shouldBe 0
+    MovieTheater.part2(input) shouldBe 24
   }
 }
