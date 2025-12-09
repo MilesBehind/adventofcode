@@ -30,7 +30,8 @@ internal data class TheaterFloor(val redTiles: List<Coordinate>) {
     return redTiles.flatMapIndexed { index, corner1 ->
       redTiles.drop(index + 1).map { corner2 ->
         val rectangle = Rectangle(corner1, corner2)
-        if (rectangle.inner().let { inner -> lines.any { line -> inner crosses line } }) 0 else rectangle.area
+        val inner = rectangle.inner()
+        if (lines.any { line -> inner crosses line }) 0 else rectangle.area
       }
     }.maxOf { it }
   }
