@@ -81,4 +81,3 @@ internal fun List<String>.parseTheaterFloor(): TheaterFloor =
     val (x, y) = line.split(",").map { it.toInt() }
     Coordinate(x, y)
   })
-
