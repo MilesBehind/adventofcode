@@ -12,7 +12,7 @@ object Reactor: Day<Long> {
     input.parseDevices().findAllPaths("you", "out", emptySet())
 
   override fun part2(input: List<String>): Long =
-    input.parseDevices().findAllPaths("svr", "out", setOf("dac", "fft"))
+    0 //input.parseDevices().findAllPaths("svr", "out", setOf("dac", "fft"))
 }
 
 internal data class Device(val name: String) {
@@ -21,8 +21,8 @@ internal data class Device(val name: String) {
 
 internal data class Devices(val devices: List<Device>, val connections: Map<Device, List<Device>>) {
 
-  data class VisitedDevice(val count: Int = 0, val visitCount: Int = 0, val visitedVias: Set<String> = emptySet()) {
-    override fun toString(): String = "$count/$visitCount/$visitedVias"
+  data class VisitedDevice(val visitCount: Int = 0, val visitedVias: Map<String, Int> = emptyMap()) {
+    override fun toString(): String = "$visitCount/$visitedVias"
   }
 
   fun findAllPaths(from: String, to: String, requiredVias: Set<String>): Long {
@@ -32,28 +32,31 @@ internal data class Devices(val devices: List<Device>, val connections: Map<Devi
 
     tailrec fun findAllPaths(devices: Set<Device>, visited: MutableMap<String, VisitedDevice>): Long {
       println("findAllPaths($devices, $visited)")
-      if (devices.isEmpty()) return (visited[start.name]?.count ?: 0).toLong().also { println("visited: ${visited.size}, $visited") }
+      if (devices.isEmpty()) {
+        val directConnections = connections[start]?.toSet() ?: emptySet()
+        val directVisited = visited.filterKeys { name -> name in directConnections.map { it.name } }
+        if (requiredVias.isEmpty()) return directVisited.map { (name, visitedDevice) -> visitedDevice.visitedVias.getOrDefault(name, 0) }.sum().toLong()
+        return 0
+      }
       val nextDevices = mutableSetOf<Device>()
       devices.forEach { device ->
         val visitedDevice = visited.getOrDefault(device.name, VisitedDevice())
-        val count         = visitedDevice.count
         val visitedVias   = visitedDevice.visitedVias
         reverseConnections[device]?.forEach { connected ->
-          val oldVisitedDevice             = visited.getOrDefault(connected.name, VisitedDevice())
-          val connectedDeviceIsRequiredVia = requiredVias.isEmpty() || connected.name in requiredVias
-          val newCount                     = oldVisitedDevice.count + count
-          val newVisitCount                = oldVisitedDevice.visitCount + 1
-          val newVisitedVias               = if (connectedDeviceIsRequiredVia) oldVisitedDevice.visitedVias + visitedVias + connected.name else oldVisitedDevice.visitedVias + visitedVias
-          visited[connected.name] = VisitedDevice(newCount, newVisitCount, newVisitedVias)
+          val oldVisitedDevice = visited.getOrDefault(connected.name, VisitedDevice(0, visitedVias))
+          val newVisitCount    = oldVisitedDevice.visitCount + 1
+          val newVisitedVias   = oldVisitedDevice.visitedVias.toMutableMap()
+          newVisitedVias[connected.name] = newVisitedVias.getOrDefault(connected.name, 0) + 1
+          visited[connected.name] = VisitedDevice(newVisitCount, newVisitedVias)
           if (visited[connected.name]?.visitCount == connections[connected]?.size) {
             nextDevices += connected
           }
-          println("$device --> $connected:   count = $newCount, visit count = $newVisitCount, visited vias = $newVisitedVias")
+          println("$device --> $connected:   visit count = ${visited[connected.name]?.visitCount}, visited vias = ${visited[connected.name]?.visitedVias}")
         }
       }
       return findAllPaths(nextDevices, visited)
     }
-    return findAllPaths(setOf(end), mutableMapOf(end.name to VisitedDevice(1, 1)))
+    return findAllPaths(setOf(end), mutableMapOf(end.name to VisitedDevice(1, mapOf(end.name to 1))))
   }
 }
 
