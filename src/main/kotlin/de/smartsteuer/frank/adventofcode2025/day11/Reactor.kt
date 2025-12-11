@@ -28,8 +28,8 @@ object Reactor: Day<Long> {
 internal data class Devices(val connections: Map<String, List<String>>) {
   fun countPaths(from: String, to: String, cache: MutableMap<String, Long> = mutableMapOf()): Long =
     if (from == to) 1 else cache.getOrPut(from) {
-      connections.getOrDefault(from, emptyList()).sumOf { target ->
-        countPaths(target, to, cache)
+      connections.getOrDefault(from, emptyList()).sumOf { intermediate ->
+        countPaths(intermediate, to, cache)
       }.also { cache[from] = it }
     }
 }
