@@ -42,13 +42,4 @@ class ReactorTest {
   fun `part 2 returns expected result`() {
     Reactor.part2(input2) shouldBe 2
   }
-
-  @Test
-  fun `map can be reversed`() {
-    mapOf(
-      "A" to listOf(1, 2, 3),
-      "B" to listOf(2, 4),
-      "C" to listOf(3)
-    ).reverse() shouldBe mapOf(1 to  listOf("A"), 2 to  listOf("A", "B"), 3 to  listOf("A", "C"), 4 to  listOf("B"))
-  }
 }
