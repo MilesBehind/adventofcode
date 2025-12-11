@@ -1,6 +1,5 @@
 package de.smartsteuer.frank.adventofcode2025.day11
 
-import de.smartsteuer.frank.adventofcode2025.lines
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -45,8 +44,11 @@ class ReactorTest {
   }
 
   @Test
-  fun `find cycles`() {
-    val cycles = lines("/adventofcode2025/day11/devices.txt").parseDevices().findAllCycles()
-    cycles.forEach { cycle -> println(cycle) }
+  fun `map can be reversed`() {
+    mapOf(
+      "A" to listOf(1, 2, 3),
+      "B" to listOf(2, 4),
+      "C" to listOf(3)
+    ).reverse() shouldBe mapOf(1 to  listOf("A"), 2 to  listOf("A", "B"), 3 to  listOf("A", "C"), 4 to  listOf("B"))
   }
 }
