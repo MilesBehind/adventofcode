@@ -27,13 +27,19 @@ class MachinesTest {
     val machines = input.parseMachines()
     machines shouldHaveSize 3
     machines.first() shouldBe Machine(listOf(false, true, true, false),
-                                      listOf(Button(listOf(3)),
-                                             Button(listOf(1, 3)),
-                                             Button(listOf(2)),
-                                             Button(listOf(2, 3)),
-                                             Button(listOf(0, 2)),
-                                             Button(listOf(0, 1))),
+                                      listOf(Button(listOf(3   ), 4),
+                                            Button(listOf(1, 3), 4),
+                                            Button(listOf(2   ), 4),
+                                            Button(listOf(2, 3), 4),
+                                            Button(listOf(0, 2), 4),
+                                            Button(listOf(0, 1), 4)),
                                       listOf(3, 5, 4, 7))
+  }
+
+  @Test
+  fun `fewest clicks for required joltages are found`() {
+    val machines = input.parseMachines()
+    machines[0].findFewestButtonPressesForRequiredJoltages()
   }
 
   @Test
@@ -77,8 +83,7 @@ class MachinesTest {
     val machine1Buttons = machine1.buttons
     val machine1StateSize = machine1.targetIndicators.size
     val resultState = listOf(0, 1, 1, 1, 3, 3, 3, 4, 5, 5).fold(List(machine1StateSize) { 0 }) { joltages, buttonIndex ->
-      val button = machine1Buttons[buttonIndex]
-      button.apply(joltages)//.also { newJoltages -> println("$joltages apply button ($button) -> $newJoltages") }
+      machine1Buttons[buttonIndex].apply(joltages)
     }
     resultState shouldBe listOf(3, 5, 4, 7)
   }
