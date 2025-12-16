@@ -18,19 +18,24 @@ internal data class Coordinate(val x: Int, val y: Int)
 
 internal data class Present(val index: Int, val occupied: Set<Coordinate>) {
   val area = occupied.size
+  val boundingArea = 3 * 3
 }
 
 internal data class Region(val width: Int, val height: Int, val presentCounts: List<Int>) {
   val area = width * height
-  fun remainingArea(presents: List<Present>): Int = area - presentCounts.mapIndexed { index, count -> count * presents[index].area }.sum()
+  fun estimateRemainingArea(presents: List<Present>): Pair<Int, Int> {
+    val lowerEstimate = area - presentCounts.mapIndexed { index, count -> count * presents[index].area }.sum()
+    val upperEstimate = area - presentCounts.mapIndexed { index, count -> count * presents[index].boundingArea }.sum()
+    return lowerEstimate to upperEstimate
+  }
 }
 
 internal data class PresentsAndRegions(val presents: List<Present>, val regions: List<Region>) {
   fun countFittingRegions(): Int {
-    val remainingAreasForAllRegions = regions.map { it.remainingArea(presents) }
-    println("all unique missing spaces in regions that do not fit present areas: ${remainingAreasForAllRegions.filter { it < 0 }.toSet()}")
-    println("minimum space remaining in regions that fit present areas:          ${remainingAreasForAllRegions.filter { it >= 0 }.min()}")
-    return regions.count { it.remainingArea(presents) >= 0 }
+    val (lowerEstimates, upperEstimates) = regions.map { it.estimateRemainingArea(presents) }.unzip()
+    println("all unique missing spaces in regions that do not fit present areas: ${lowerEstimates.filter { it < 0 }.toSet()}")
+    println("minimum space remaining in regions that fit present areas:          ${upperEstimates.filter { it >= 0 }.min()}")
+    return regions.count { it.estimateRemainingArea(presents).second >= 0 }
   }
 }
 
